@@ -1,6 +1,6 @@
 package pillihuaman.com.pe.support.RequestResponse.dto;
 
-import pillihuaman.com.pe.basebd.menu.Menu;
+import java.awt.*;
 
 public class SystemResponse {
     private String id; // You can use String for the ID here

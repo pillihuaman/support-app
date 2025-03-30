@@ -5,9 +5,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-import pillihuaman.com.pe.basebd.control.Control;
-import pillihuaman.com.pe.lib.request.ReqControl;
-import pillihuaman.com.pe.lib.response.RespControl;
+import pillihuaman.com.pe.support.dto.ReqControl;
+import pillihuaman.com.pe.support.dto.RespControl;
+import pillihuaman.com.pe.support.repository.control.Control;
 
 import java.util.List;
 
