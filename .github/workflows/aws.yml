@@ -3,7 +3,7 @@ name: Deploy Support Microservice to AWS EC2
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   EC2_INSTANCE_IP: 18.191.52.191
