@@ -4,18 +4,19 @@ on:
   push:
     branches:
       - master
+
 env:
-  AWS_REGION: us-east-2
   EC2_INSTANCE_IP: 18.191.52.191
   EC2_USER: ec2-user
   JAR_NAME: pillihuaman-com-support-0.0.1-SNAPSHOT.jar
   APP_PORT: 8091
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository test
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up AWS CLI
@@ -23,7 +24,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-2  # ✅ Fijo, sin variable aquí
 
       - name: Save EC2 key pair to file
         run: |
