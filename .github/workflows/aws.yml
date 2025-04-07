@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-
 env:
   AWS_REGION: us-east-2
   EC2_INSTANCE_IP: 18.191.52.191
