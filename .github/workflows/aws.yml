@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository test
         uses: actions/checkout@v2
 
       - name: Set up AWS CLI
