@@ -61,6 +61,7 @@ public class SecurityConfiguration {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:4200",
                 "http://ec2-3-145-180-222.us-east-2.compute.amazonaws.com",
+                "http://d2af6r0c1o0bb2.cloudfront.net",
                 "https://d2af6r0c1o0bb2.cloudfront.net"
         ));
 
