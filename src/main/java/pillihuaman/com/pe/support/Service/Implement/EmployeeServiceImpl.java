@@ -2,15 +2,15 @@ package pillihuaman.com.pe.support.Service.Implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pillihuaman.com.pe.basebd.common.MyJsonWebToken;
-import pillihuaman.com.pe.basebd.employee.Employee;
-import pillihuaman.com.pe.basebd.employee.dao.EmployeeDAO;
-import pillihuaman.com.pe.lib.request.ReqBase;
-import pillihuaman.com.pe.lib.request.ReqEmployee;
-import pillihuaman.com.pe.lib.response.RespBase;
-import pillihuaman.com.pe.lib.response.RespEmployee;
+import pillihuaman.com.pe.lib.common.MyJsonWebToken;
+import pillihuaman.com.pe.lib.common.ReqBase;
+import pillihuaman.com.pe.lib.common.RespBase;
+import pillihuaman.com.pe.support.RequestResponse.RespEmployee;
 import pillihuaman.com.pe.support.RequestResponse.dto.Mapper.MapperEmployee;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqEmployee;
 import pillihuaman.com.pe.support.Service.EmployeeService;
+import pillihuaman.com.pe.support.repository.employee.Employee;
+import pillihuaman.com.pe.support.repository.employee.dao.EmployeeDAO;
 
 import java.util.List;
 
@@ -28,15 +28,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         ReqEmployee reqEmployee = request.getData();
         Employee em = MapperEmployee.INSTANCE.toEmployee(reqEmployee);
         Employee savedEmployee = null;
-        for (int i = 0; i <= 1000; i++) {
-            em.setName("Name-"+i+"");
-            em.setId(null);
-           employeeDAO.saveEmployee(em,
+            savedEmployee = employeeDAO.saveEmployee(em,
                     jwt);
-        }
-
         // Convertir el Employee guardado a RespEmployee
-        RespEmployee respEmployee = MapperEmployee.INSTANCE.toResEmployee(null);
+        RespEmployee respEmployee = MapperEmployee.INSTANCE.toRespEmployee(savedEmployee);
 
 
         return new RespBase<>(respEmployee);
@@ -78,6 +73,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         // List<RespEmployee> respEmployees = MapperEmployee.INSTANCE.employeesToRespEmployees(employees);
         RespBase<List<RespEmployee>> res = new RespBase<>(null);
         // Envolver la lista en un RespBase y retornarla
+        return null;
+    }
+
+    @Override
+    public RespBase<Boolean> deleteEmployee(MyJsonWebToken jwt, String id) {
         return null;
     }
 }

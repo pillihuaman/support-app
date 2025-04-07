@@ -5,9 +5,11 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pillihuaman.com.pe.lib.common.AuditEntity;
+import pillihuaman.com.pe.support.repository.product.dao.SizeStock;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,6 +32,8 @@ public class Product implements Serializable {
     private Date createdAt;
     private Date updatedAt;
     private boolean status;
+    private  String batch;
+    private List<SizeStock> sizes;
     private AuditEntity audit;
 }
 

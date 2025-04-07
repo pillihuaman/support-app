@@ -54,4 +54,6 @@ public static final String CONSULTA_PERSONAS_POR_DOCUMENTO = "CONSULTA PERSONAS 
 	public static final String COLLECTION_TOKEN = "token";
 	public static final String COLLECTION_CONTROL = "control";
 	public static final String COLLECTION_EMPLOYEE = "employee";
+	public static final String COLLECTION_PRODUCT = "product";
+	public static final String COLLECTION_STORE = "store";
 }
