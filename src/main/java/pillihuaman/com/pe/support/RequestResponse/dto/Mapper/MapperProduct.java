@@ -17,7 +17,6 @@ public interface MapperProduct {
     @Mapping(source = "id", target = "id", qualifiedByName = "objectIdToString")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
-    @Mapping(source = "sellingPrice", target = "price") // Keep only sellingPrice → price
     @Mapping(source = "category", target = "category")
     @Mapping(source = "barcode", target = "barcode")
     RespProduct toRespProduct(Product product);
@@ -26,11 +25,8 @@ public interface MapperProduct {
     @Mapping(source = "id", target = "id", qualifiedByName = "stringToObjectId") // Fixed id mapping
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
-    @Mapping(source = "price", target = "sellingPrice") // Ensure price is mapped to sellingPrice
     @Mapping(source = "category", target = "category")
     @Mapping(source = "barcode", target = "barcode")
-    @Mapping(target = "costPrice", ignore = true) // Ignore costPrice unless required
-    @Mapping(target = "unitMeasure", ignore = true)
     @Mapping(target = "supplierId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

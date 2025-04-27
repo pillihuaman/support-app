@@ -1,6 +1,9 @@
 package pillihuaman.com.pe.support.repository.product;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,30 +14,49 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Document(collection = "product")
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     private ObjectId id;
+
+    // Identifiers
     private String productCode;
     private String barcode;
+    private String sku;                  // Stock Keeping Unit
+    private String upc;                  // Universal Product Code
+
+    // Basic Info
     private String name;
     private String description;
     private String category;
+    private String subcategory;
+
+    // Supplier & Manufacturer
     private ObjectId supplierId;
-    private Double costPrice;
-    private Double sellingPrice;
-    private String unitMeasure;
+    private String manufacturer;
+    private String brand;
+
+    // Size options (remains outside embedded structure)
+    private List<SizeStock> sizes;
+
+    // Batching & Production
+    private Date expirationDate;
+    private Date manufacturingDate;
+
+    // Embedded Components
+    private ProductPricing pricing;
+    private ProductInventory inventory;
+    private ProductMedia media;
+
+    // Status & Audit
+    private boolean status;
     private Date createdAt;
     private Date updatedAt;
-    private boolean status;
-    private  String batch;
-    private List<SizeStock> sizes;
     private AuditEntity audit;
 }
-
-// Supplier as an embedded class

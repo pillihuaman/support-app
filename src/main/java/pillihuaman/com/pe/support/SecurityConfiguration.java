@@ -38,7 +38,7 @@ public class SecurityConfiguration {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/configuration/ui",
-                                "/configuration/security"
+                                "/configuration/security", "/v1/support/system/menu-tree"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
