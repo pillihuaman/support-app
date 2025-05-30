@@ -6,8 +6,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-import pillihuaman.com.pe.support.dto.ReqSystemEntities;
-import pillihuaman.com.pe.support.dto.RespSystemEntities;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqSystemEntities;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespSystemEntities;
 import pillihuaman.com.pe.support.repository.system.System;
 
 import java.util.List;

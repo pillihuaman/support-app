@@ -1,6 +1,7 @@
 package pillihuaman.com.pe.support.repository;
 
 import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.List;
@@ -131,19 +132,5 @@ public interface BaseMongoRepository<T> {
 	 */
 	void updateOne(Bson filter, T document);
 
-	/**
-	 * Obtiene siguiente correlativo desde una sequencia de mongodb
-	 * @param collectionName
-	 * @param sequenceName
-	 * @return
-	 */
-	//String getNextSequence(String collectionName, String sequenceName);
-
-	/**
-	 * Almacena un Java POJO en GridFS asociando un nombre.
-	 * @param <T> objeto del tipo T que se almacenar&aacute; en GridFS
-	 * @param gridFsFileName nombre del objeto almacenado en GridFS
-	 * @return id identificardor del objeto almacenado en GridFS
-	 * @throws Exception
-	 */
+	MongoCollection<Document> getRawCollection(String collectionName);
 }

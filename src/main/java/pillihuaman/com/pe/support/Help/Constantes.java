@@ -55,8 +55,12 @@ public static final String CONSULTA_PERSONAS_POR_DOCUMENTO = "CONSULTA PERSONAS 
 	public static final String COLLECTION_CONTROL = "control";
 	public static final String COLLECTION_EMPLOYEE = "employee";
 	public static final String COLLECTION_PRODUCT = "product";
+	public static final String COLLECTION_PRODUCT_VIEW = "product_view";
 	public static final String COLLECTION_STORE = "store";
 	public static final String COLLECTION_SYSTEM = "system";
 	public static final String COLLECTION_PAGE = "page";
 	public static final String COLLECTION_MENU_ITEM = "menu";
+	public static final String COLLECTION_SUPPLIER = "supplier";
+	public static final String LIFE_TIME_IMG_AWS = "30";
+	public static final String COLLECTION_COMMON_DATA = "common_data";
 }

@@ -7,6 +7,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import jakarta.annotation.PostConstruct;
+import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
@@ -215,6 +216,9 @@ public abstract class AzureAbstractMongoRepositoryImpl<T> implements BaseMongoRe
     /**
      * Guarda o actualiza un documento basado en su ID.
      */
-
+    @Override
+    public MongoCollection<Document> getRawCollection(String collectionName) {
+        return database.getCollection(collectionName);
+    }
 
 }

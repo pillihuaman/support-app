@@ -1,5 +1,6 @@
 package pillihuaman.com.pe.support.repository.product;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,10 +44,12 @@ public class Product implements Serializable {
     private String brand;
 
     // Size options (remains outside embedded structure)
-    private List<SizeStock> sizes;
+    private List<FileMetadata> fileMetadata;
 
     // Batching & Production
+    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
     private Date expirationDate;
+    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
     private Date manufacturingDate;
 
     // Embedded Components

@@ -2,8 +2,8 @@ package pillihuaman.com.pe.support.repository.system.dao;
 
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqEmployee;
-import pillihuaman.com.pe.support.dto.ReqMenu;
-import pillihuaman.com.pe.support.dto.RespMenu;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqMenu;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespMenu;
 import pillihuaman.com.pe.support.repository.BaseMongoRepository;
 import pillihuaman.com.pe.support.repository.system.MenuItem;
 
