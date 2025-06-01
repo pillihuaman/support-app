@@ -38,17 +38,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jdk maven
 
-      - name: Authenticate with AWS CodeArtifact and configure Maven
+      - name: Set CODEARTIFACT_AUTH_TOKEN env variable
         run: |
-          AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+          echo "CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
             --domain pillihuamanlib \
             --domain-owner 020510965219 \
             --region ${{ env.AWS_REGION }} \
             --query authorizationToken \
-            --output text)
-
-          mkdir -p ~/.m2
-          sed "s|{{AUTH_TOKEN}}|$AUTH_TOKEN|g" ci/settings-template.xml > ~/.m2/settings.xml
+            --output text)" >> $GITHUB_ENV
 
       - name: Build the project with Maven
         run: mvn clean install -DskipTests
