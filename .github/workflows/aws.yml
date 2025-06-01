@@ -52,6 +52,18 @@ jobs:
 
       - name: Build the project with Maven
         run: mvn clean install -DskipTests
+      - name: Verify generated JAR and print contents of target/
+        run: |
+          echo "Listing target directory contents:"
+          ls -lah target/
+
+          if [ -f "target/${{ env.JAR_NAME }}" ]; then
+            echo "JAR file found: ${{ env.JAR_NAME }}"
+          else
+            echo "ERROR: JAR file not found: target/${{ env.JAR_NAME }}"
+            exit 1
+          fi
+
 
       - name: Copy JAR file to EC2 instance
         run: |
