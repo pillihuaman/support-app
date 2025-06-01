@@ -6,9 +6,9 @@ on:
       - main
 
 env:
-  EC2_INSTANCE_IP: 18.191.52.191
+  EC2_INSTANCE_IP: 44.203.50.221
   EC2_USER: ec2-user
-  JAR_NAME: pillihuaman-com-support-0.0.1-SNAPSHOT.jar
+  JAR_NAME: pillihuaman-com-support-v2-0.0.1-SNAPSHOT.jar
   APP_PORT: 8091
 
 jobs:
@@ -19,16 +19,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up AWS CLIv
+      - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2  # ✅ Fijo, sin variable aquí
+          aws-region: us-east-1
 
       - name: Save EC2 key pair to file
         run: |
-          echo "${{ secrets.EC2_KEY_PAIR_PATH }}" > ec2_key.pem
+          echo "${{ secrets.EC2_KEY_PAIR }}" > ec2_key.pem
           chmod 400 ec2_key.pem
 
       - name: Install Java and Maven
@@ -40,7 +40,7 @@ jobs:
         run: |
           AUTH_TOKEN=$(aws codeartifact get-authorization-token \
             --domain pillihuamanlib \
-            --domain-owner 570123367471 \
+            --domain-owner 020510965219 \
             --query authorizationToken \
             --output text)
 
