@@ -6,8 +6,10 @@ on:
       - main
 
 env:
-  EC2_INSTANCE_IP: 44.203.50.221
-  EC2_USER: ec2-user
+  AWS_REGION: us-east-2                   # Región donde está CodeArtifact
+  EC2_REGION: us-east-1                   # Región donde está EC2
+  EC2_INSTANCE_IP: 44.203.50.221          # IP pública de EC2
+  EC2_USER: ec2-user                      # Usuario de Amazon Linux
   JAR_NAME: pillihuaman-com-support-v2-0.0.1-SNAPSHOT.jar
   APP_PORT: 8091
 
@@ -24,7 +26,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Save EC2 key pair to file
         run: |
@@ -41,13 +43,14 @@ jobs:
           AUTH_TOKEN=$(aws codeartifact get-authorization-token \
             --domain pillihuamanlib \
             --domain-owner 020510965219 \
+            --region ${{ env.AWS_REGION }} \
             --query authorizationToken \
             --output text)
 
           mkdir -p ~/.m2
           sed "s|{{AUTH_TOKEN}}|$AUTH_TOKEN|g" ci/settings-template.xml > ~/.m2/settings.xml
 
-      - name: Build the project
+      - name: Build the project with Maven
         run: mvn clean install -DskipTests
 
       - name: Copy JAR file to EC2 instance
@@ -57,7 +60,7 @@ jobs:
       - name: Restart support microservice
         run: |
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_INSTANCE_IP }} << EOF
-            echo "Killing previous microservice on port ${{ env.APP_PORT }}"
+            echo "Stopping any running instance on port ${{ env.APP_PORT }}"
             PID=\$(lsof -ti tcp:${{ env.APP_PORT }}) && kill -9 \$PID || echo "No process to kill"
             echo "Starting new instance of ${{ env.JAR_NAME }}"
             nohup java -jar /home/${{ env.EC2_USER }}/${{ env.JAR_NAME }} > log_support.out 2>&1 &
