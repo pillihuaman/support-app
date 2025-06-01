@@ -30,8 +30,9 @@ jobs:
 
       - name: Save EC2 key pair to file
         run: |
-          echo "${{ secrets.EC2_KEY_PAIR }}" > ec2_key.pem
+          printf "%s" "${{ secrets.EC2_KEY_PAIR }}" > ec2_key.pem
           chmod 400 ec2_key.pem
+      
 
       - name: Install Java and Maven
         run: |
