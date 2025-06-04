@@ -7,7 +7,7 @@ import pillihuaman.com.pe.support.repository.store.Store;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-02T05:50:57-0500",
+    date = "2025-06-03T11:04:36-0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (JetBrains s.r.o.)"
 )
 public class MapperStoreImpl implements MapperStore {
