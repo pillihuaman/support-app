@@ -39,8 +39,8 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**",          // Documentación OpenAPI
                                 "/swagger-resources/**",
                                 "/webjars/**",
-                                "/configuration/ui",
-                                "/configuration/security", "/v1/support/system/menu-tree"
+                                "/configuration/ui"
+                              //  "/configuration/security", "/v1/support/system/menu-tree"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -60,9 +60,9 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(corsProperties.getAllowedOrigins());
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(true);
+        config.setAllowedMethods(corsProperties.getAllowedMethods());
+        config.setAllowedHeaders(corsProperties.getAllowedHeaders());
+        config.setAllowCredentials(corsProperties.isAllowCredentials());
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

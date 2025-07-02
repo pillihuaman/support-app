@@ -10,7 +10,9 @@ public static final String CONSULTA_PERSONAS_POR_DOCUMENTO = "CONSULTA PERSONAS 
 
 	public static final String BASE_ENDPOINT = "{access:private|public}/v1";
 	public static final String ENDPOINT = "/support";
-	private Constantes() {
+    public static final String COLLECTION_TENANT = "tenant";
+
+    private Constantes() {
 		super();
 	}
 
