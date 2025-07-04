@@ -6,10 +6,10 @@ on:
       - main
 
 env:
-  AWS_REGION: us-east-2                   # Región donde está CodeArtifact
-  EC2_REGION: us-east-1                   # Región donde está EC2
-  EC2_INSTANCE_IP: 34.227.112.244        # IP pública de EC2
-  EC2_USER: ec2-user                      # Usuario de Amazon Linux
+  AWS_REGION: us-east-2
+  EC2_REGION: us-east-1
+  EC2_INSTANCE_IP: 44.195.221.32        # ← IP corregida aquí
+  EC2_USER: ec2-user
   JAR_NAME: pillihuaman-com-support-0.0.1-SNAPSHOT.jar
   APP_PORT: 8091
 
