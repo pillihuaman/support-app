@@ -93,4 +93,31 @@ public class ProductController {
     }
 
 
+    @GetMapping(path = {Constantes.BASE_ENDPOINT  + Constantes.ENDPOINT+"/search-for-ia"}, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<RespBase<List<RespProduct>>> searchForIA(
+            @RequestParam(name = "q") String q,
+            @RequestParam(name = "limit", defaultValue = "5") int limit) {
+
+        if (q == null || q.trim().isEmpty()) {
+            RespBase.Status.Error error = RespBase.Status.Error.builder()
+                    .code("INVALID_INPUT")
+                    .httpCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                    .messages(List.of("El parámetro de búsqueda 'q' no puede estar vacío."))
+                    .build();
+
+            RespBase<List<RespProduct>> response = RespBase.<List<RespProduct>>builder()
+                    .status(new RespBase.Status(false, error))
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // El servicio ahora devolverá un RespBase directamente
+        RespBase<List<RespProduct>> response = productService.searchProductsByKeywords(q, limit);
+
+        // Devolvemos la respuesta del servicio, que ya tiene el formato correcto
+        return ResponseEntity.ok(response);
+    }
+
+
+
 }

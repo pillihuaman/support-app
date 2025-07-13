@@ -20,5 +20,12 @@ public interface ProductService {
 	// Método para listar empleados asociados a un usuario
 	RespBase<RespProduct> listProductsByUser(MyJsonWebToken jwt, ReqBase<ReqProduct> request);
 	RespBase<Boolean> deleteProduct(MyJsonWebToken jwt,  String id);
+	/**
+	 * Busca productos por palabras clave y envuelve el resultado en un RespBase.
+	 * @param keywordsString Una cadena de texto con una o más palabras clave.
+	 * @param limit El número máximo de productos a devolver.
+	 * @return Un objeto RespBase que contiene la lista de productos encontrados.
+	 */
+	RespBase<List<RespProduct>> searchProductsByKeywords(String keywordsString, int limit);
 
 }

@@ -38,5 +38,5 @@ public interface ProductDAO extends BaseMongoRepository<Product> {
     List<Product> findByUserId(String userId);
 
     boolean deleteInactiveProduct(MyJsonWebToken jwt, String id);
-
+    List<Product> searchProductsByKeywords(String keywordsString, int limit);
 }

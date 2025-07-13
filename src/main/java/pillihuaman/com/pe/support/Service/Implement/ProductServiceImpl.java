@@ -15,6 +15,8 @@ import pillihuaman.com.pe.support.RequestResponse.dto.RespSupplier;
 import pillihuaman.com.pe.support.repository.product.Product;
 import pillihuaman.com.pe.support.repository.product.dao.ProductDAO;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class ProductServiceImpl implements ProductService {
     @Autowired
@@ -77,6 +79,39 @@ public class ProductServiceImpl implements ProductService {
     public RespBase<Boolean> deleteProduct(MyJsonWebToken jwt, String id) {
         boolean deleted = productDAO.deleteInactiveProduct(jwt, id);
         return new RespBase<>(deleted);
+    }
+
+    @Override
+    public RespBase<List<RespProduct>> searchProductsByKeywords(String keywordsString, int limit) {
+        try {
+            // 1. Llamada al DAO (la lógica del DAO no cambia, sigue devolviendo List<Product>)
+            List<Product> foundProducts = productDAO.searchProductsByKeywords(keywordsString, limit);
+
+            // 2. Mapeo de Entidades a DTOs
+            List<RespProduct> responseList = foundProducts.stream()
+                    .map(mapperProduct::toRespProduct)
+                    .collect(Collectors.toList());
+
+            // 3. Construcción de la respuesta RespBase exitosa
+            return RespBase.<List<RespProduct>>builder()
+                    .payload(responseList)
+                    .status(new RespBase.Status(true, null)) // success = true, error = null
+                    .build();
+
+        } catch (Exception e) {
+            RespBase.Status.Error error = RespBase.Status.Error.builder()
+                    .code("E5001") // Código de error interno, ej: E = Error, 500 = Servidor, 1 = Primer error definido
+                    .httpCode("500") // El código HTTP como un simple String. El controller lo interpretará.
+                    .messages(List.of("Ocurrió un error interno al procesar la búsqueda de productos.")) // Mensaje genérico para el cliente
+                    .build();
+
+            RespBase.Status status = new RespBase.Status(false, error);
+
+            return RespBase.<List<RespProduct>>builder()
+                    .status(status)
+                    .payload(null) // En caso de error, el payload es nulo.
+                    .build();
+        }
     }
 }
 

@@ -165,4 +165,69 @@ public class ProductDaoImplement extends AzureAbstractMongoRepositoryImpl<Produc
         }
     }
 
+
+    /**
+     * Realiza una búsqueda de texto flexible en múltiples campos de productos.
+     * Este método está optimizado para ser consumido por el servicio de IA.
+     *
+     * @param keywordsString La cadena de texto a buscar (ej: "polo sublimado algodon").
+     * @param limit El número máximo de resultados a devolver.
+     * @return Una lista de entidades de Producto que coinciden con los criterios.
+     */
+    @Override
+    public List<Product> searchProductsByKeywords(String keywordsString, int limit) {
+        MongoCollection<Product> collection = getCollection(this.COLLECTION, Product.class);
+
+        // 1. Separar la cadena de búsqueda en palabras clave individuales.
+        // Ejemplo: "polo algodon" -> ["polo", "algodon"]
+        List<String> keywords = List.of(keywordsString.toLowerCase().split("\\s+"));
+
+        // 2. Construir una lista de filtros ($or) para cada palabra clave.
+        // La consulta buscará documentos donde CUALQUIER palabra clave coincida en CUALQUIER campo especificado.
+        List<Document> orClauses = new ArrayList<>();
+
+        for (String keyword : keywords) {
+            // Se crea un patrón regex para buscar la palabra clave en cualquier parte del texto.
+            // La opción "i" lo hace case-insensitive (ignora mayúsculas/minúsculas).
+            Document regex = new Document("$regex", keyword).append("$options", "i");
+
+            // Se añade un filtro $or para esta palabra clave específica.
+            // Buscará la palabra 'keyword' en cualquiera de los siguientes campos.
+            orClauses.add(new Document("$or", List.of(
+                    new Document("name", regex),
+                    new Document("description", regex),
+                    new Document("category", regex),
+                    new Document("subcategory", regex),
+                    new Document("brand", regex),
+                    new Document("media.tags", regex) // Busca dentro del array de tags
+            )));
+        }
+
+        // 3. Crear la consulta final combinando todos los filtros.
+        Document query = new Document();
+
+        // El filtro principal ($and) asegura que TODAS las condiciones se cumplan.
+        List<Document> andClauses = new ArrayList<>();
+
+        // Condición 1: El producto debe estar activo.
+        andClauses.add(new Document("status", true));
+
+        // Condición 2 (opcional): Si hay palabras clave, el producto debe coincidir con TODAS ellas.
+        // Usamos $and en las cláusulas $or. Esto significa que el documento debe contener "polo" Y "algodon".
+        if (!orClauses.isEmpty()) {
+            andClauses.addAll(orClauses);
+        }
+
+        // Se construye la consulta final.
+        if (!andClauses.isEmpty()) {
+            query.put("$and", andClauses);
+        }
+
+        // 4. Ejecutar la consulta con el límite de resultados.
+        // System.out.println("Executing MongoDB Query: " + query.toJson()); // Descomentar para depurar la consulta
+        return collection.find(query)
+                .limit(limit)
+                .into(new ArrayList<>());
+    }
+
 }
