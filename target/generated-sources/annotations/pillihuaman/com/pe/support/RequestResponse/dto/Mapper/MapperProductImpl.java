@@ -15,14 +15,16 @@ import pillihuaman.com.pe.support.RequestResponse.dto.RespFileMetadata;
 import pillihuaman.com.pe.support.repository.product.FileMetadata;
 import pillihuaman.com.pe.support.repository.product.Product;
 import pillihuaman.com.pe.support.repository.product.ProductInventory;
+import pillihuaman.com.pe.support.repository.product.ProductMeasurement;
 import pillihuaman.com.pe.support.repository.product.ProductMedia;
 import pillihuaman.com.pe.support.repository.product.ProductPricing;
 import pillihuaman.com.pe.support.repository.product.SizeStock;
+import pillihuaman.com.pe.support.repository.product.SpecificationGroup;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-28T10:38:52-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (JetBrains s.r.o.)"
+    date = "2025-07-20T23:12:39-0500",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (Oracle Corporation)"
 )
 @Component
 public class MapperProductImpl implements MapperProduct {
@@ -57,6 +59,19 @@ public class MapperProductImpl implements MapperProduct {
         respProduct.setMedia( productMediaToProductMedia( product.getMedia() ) );
         respProduct.setStatus( product.isStatus() );
         respProduct.setFileMetadata( fileMetadataListToRespFileMetadataList( product.getFileMetadata() ) );
+        List<String> list1 = product.getTags();
+        if ( list1 != null ) {
+            respProduct.setTags( new ArrayList<String>( list1 ) );
+        }
+        List<ProductMeasurement> list2 = product.getMeasurements();
+        if ( list2 != null ) {
+            respProduct.setMeasurements( new ArrayList<ProductMeasurement>( list2 ) );
+        }
+        respProduct.setSalesGuide( product.getSalesGuide() );
+        List<SpecificationGroup> list3 = product.getSpecifications();
+        if ( list3 != null ) {
+            respProduct.setSpecifications( new ArrayList<SpecificationGroup>( list3 ) );
+        }
 
         return respProduct;
     }
@@ -93,7 +108,20 @@ public class MapperProductImpl implements MapperProduct {
         if ( reqProduct.getStatus() != null ) {
             product.status( reqProduct.getStatus() );
         }
+        List<String> list = reqProduct.getTags();
+        if ( list != null ) {
+            product.tags( new ArrayList<String>( list ) );
+        }
+        List<ProductMeasurement> list1 = reqProduct.getMeasurements();
+        if ( list1 != null ) {
+            product.measurements( new ArrayList<ProductMeasurement>( list1 ) );
+        }
+        product.salesGuide( reqProduct.getSalesGuide() );
         product.fileMetadata( reqFileMetadataListToFileMetadataList( reqProduct.getFileMetadata() ) );
+        List<SpecificationGroup> list3 = reqProduct.getSpecifications();
+        if ( list3 != null ) {
+            product.specifications( new ArrayList<SpecificationGroup>( list3 ) );
+        }
 
         return product.build();
     }

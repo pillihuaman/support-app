@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqProduct;
 import pillihuaman.com.pe.support.RequestResponse.dto.RespFileMetadata;
+import pillihuaman.com.pe.support.repository.product.ProductMeasurement;
+import pillihuaman.com.pe.support.repository.product.SalesGuide;
+import pillihuaman.com.pe.support.repository.product.SpecificationGroup;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,16 +47,16 @@ public class RespProduct {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT-5")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private String manufacturingDate;
-
+    private List<ProductMeasurement> measurements;
     // Embedded Objects
     private ReqProduct.ProductPricing pricing;
     private ReqProduct.ProductInventory inventory;
     private ReqProduct.ProductMedia media;
-
+    private List<String> tags;
     // Status & Audit
     private Boolean status;
-
-    // Clases internas anidadas o referencias externas
+    private List<SpecificationGroup> specifications;
+    private SalesGuide salesGuide;
 
     @Data
     @NoArgsConstructor

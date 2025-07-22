@@ -14,6 +14,7 @@ import pillihuaman.com.pe.support.repository.product.Product;
 import pillihuaman.com.pe.support.repository.product.dao.ProductDAO;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -167,67 +168,82 @@ public class ProductDaoImplement extends AzureAbstractMongoRepositoryImpl<Produc
 
 
     /**
-     * Realiza una búsqueda de texto flexible en múltiples campos de productos.
-     * Este método está optimizado para ser consumido por el servicio de IA.
+     * Realiza una búsqueda de texto inteligente y flexible en múltiples campos de productos.
+     * La búsqueda se realiza en varias etapas dentro de un pipeline de agregación para mejorar la relevancia:
+     * 1. Filtra solo productos activos (`status: true`).
+     * 2. Utiliza el índice de texto de MongoDB para encontrar coincidencias con las palabras clave.
+     * 3. Calcula un 'score' de relevancia basado en el `textScore` de MongoDB.
+     * 4. Añade un 'boost' (impulso) a la puntuación de los productos cuyo nombre contenga la frase de búsqueda exacta.
+     * 5. Ordena los resultados finales por esta puntuación combinada, mostrando los más relevantes primero.
      *
      * @param keywordsString La cadena de texto a buscar (ej: "polo sublimado algodon").
      * @param limit El número máximo de resultados a devolver.
-     * @return Una lista de entidades de Producto que coinciden con los criterios.
+     * @return Una lista de entidades de Producto que coinciden con los criterios, ordenadas por relevancia.
      */
     @Override
     public List<Product> searchProductsByKeywords(String keywordsString, int limit) {
         MongoCollection<Product> collection = getCollection(this.COLLECTION, Product.class);
 
-        // 1. Separar la cadena de búsqueda en palabras clave individuales.
-        // Ejemplo: "polo algodon" -> ["polo", "algodon"]
-        List<String> keywords = List.of(keywordsString.toLowerCase().split("\\s+"));
+        // Se construye el pipeline de agregación
+        List<Document> pipeline = new ArrayList<>();
 
-        // 2. Construir una lista de filtros ($or) para cada palabra clave.
-        // La consulta buscará documentos donde CUALQUIER palabra clave coincida en CUALQUIER campo especificado.
-        List<Document> orClauses = new ArrayList<>();
+        // --- Etapa 1: $match - Filtrado Inicial ---
+        // Se buscan documentos que estén activos Y que coincidan con los términos de búsqueda usando el índice de texto.
+        // MongoDB procesa internamente la 'keywordsString' para buscar las palabras.
+        Document initialMatch = new Document("$match",
+                new Document("$and", Arrays.asList(
+                        new Document("status", true),
+                        new Document("$text", new Document("$search", keywordsString))
+                ))
+        );
+        pipeline.add(initialMatch);
 
-        for (String keyword : keywords) {
-            // Se crea un patrón regex para buscar la palabra clave en cualquier parte del texto.
-            // La opción "i" lo hace case-insensitive (ignora mayúsculas/minúsculas).
-            Document regex = new Document("$regex", keyword).append("$options", "i");
+        // --- Etapa 2: $addFields - Añadir Campos para el Cálculo de Relevancia ---
+        // Se añaden dos nuevos campos:
+        // 1. 'score': La puntuación de relevancia base proporcionada por la búsqueda de texto ($meta: "textScore").
+        // 2. 'nameMatchBoost': Un campo para potenciar las coincidencias de frase exacta en el nombre.
+        Document addFields = new Document("$addFields",
+                new Document("score", new Document("$meta", "textScore"))
+                        .append("nameMatchBoost", new Document("$cond", new Document()
+                                .append("if", new Document("$regexMatch", new Document("input", "$name").append("regex", keywordsString).append("options", "i")))
+                                .append("then", 10) // Boost de 10 puntos si el nombre contiene la frase exacta
+                                .append("else", 0)
+                        ))
+        );
+        pipeline.add(addFields);
 
-            // Se añade un filtro $or para esta palabra clave específica.
-            // Buscará la palabra 'keyword' en cualquiera de los siguientes campos.
-            orClauses.add(new Document("$or", List.of(
-                    new Document("name", regex),
-                    new Document("description", regex),
-                    new Document("category", regex),
-                    new Document("subcategory", regex),
-                    new Document("brand", regex),
-                    new Document("media.tags", regex) // Busca dentro del array de tags
-            )));
-        }
+        // --- Etapa 3: $addFields - Calcular la Puntuación Final ---
+        // Se crea un campo 'finalScore' que suma el score base y el boost.
+        // Esto asegura que las coincidencias exactas en el nombre tengan una prioridad mucho mayor.
+        Document finalScoreCalculation = new Document("$addFields",
+                new Document("finalScore", new Document("$add", Arrays.asList("$score", "$nameMatchBoost")))
+        );
+        pipeline.add(finalScoreCalculation);
 
-        // 3. Crear la consulta final combinando todos los filtros.
-        Document query = new Document();
 
-        // El filtro principal ($and) asegura que TODAS las condiciones se cumplan.
-        List<Document> andClauses = new ArrayList<>();
+        // --- Etapa 4: $sort - Ordenar por Relevancia ---
+        // Se ordena por la puntuación final en orden descendente. Los más relevantes aparecerán primero.
+        Document sortStage = new Document("$sort", new Document("finalScore", -1));
+        pipeline.add(sortStage);
 
-        // Condición 1: El producto debe estar activo.
-        andClauses.add(new Document("status", true));
+        // --- Etapa 5: $limit - Limitar el Número de Resultados ---
+        Document limitStage = new Document("$limit", limit);
+        pipeline.add(limitStage);
 
-        // Condición 2 (opcional): Si hay palabras clave, el producto debe coincidir con TODAS ellas.
-        // Usamos $and en las cláusulas $or. Esto significa que el documento debe contener "polo" Y "algodon".
-        if (!orClauses.isEmpty()) {
-            andClauses.addAll(orClauses);
-        }
+        // --- Etapa 6 (Opcional): $project - Limpiar los campos de puntuación de la salida final ---
+        // Para no devolver score, nameMatchBoost y finalScore al cliente.
+        Document projectStage = new Document("$project",
+                new Document("score", 0)
+                        .append("nameMatchBoost", 0)
+                        .append("finalScore", 0)
+        );
+        pipeline.add(projectStage);
 
-        // Se construye la consulta final.
-        if (!andClauses.isEmpty()) {
-            query.put("$and", andClauses);
-        }
 
-        // 4. Ejecutar la consulta con el límite de resultados.
-        // System.out.println("Executing MongoDB Query: " + query.toJson()); // Descomentar para depurar la consulta
-        return collection.find(query)
-                .limit(limit)
-                .into(new ArrayList<>());
+        // System.out.println("Executing MongoDB Aggregation: " + pipeline); // Descomentar para depurar
+
+        return collection.aggregate(pipeline, Product.class).into(new ArrayList<>());
     }
+
 
 }

@@ -8,9 +8,12 @@ import org.mapstruct.factory.Mappers;
 import pillihuaman.com.pe.support.RequestResponse.RespProduct;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqProduct;
 import pillihuaman.com.pe.support.repository.product.Product;
+import pillihuaman.com.pe.support.repository.product.ProductMeasurement;
+import pillihuaman.com.pe.support.repository.product.SalesGuide;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 //@Mapper(componentModel = "spring", uses = { MapperFileMetadata.class })
 @Mapper(componentModel = "spring", uses = { MapperFileMetadata.class }, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -38,6 +41,9 @@ public interface MapperProduct {
     @Mapping(source = "media", target = "media") // List<FileMetadata> → List<fileMetadata>
     @Mapping(source = "status", target = "status")
     @Mapping(source = "fileMetadata", target = "fileMetadata")
+    @Mapping(source = "tags", target = "tags")
+    @Mapping(source = "measurements", target = "measurements")
+    @Mapping(source = "salesGuide", target = "salesGuide")
     RespProduct toRespProduct(Product product);
 
     // ReqProduct → Product
@@ -59,6 +65,9 @@ public interface MapperProduct {
     @Mapping(source = "inventory", target = "inventory")
     @Mapping(source = "media", target = "media")
     @Mapping(source = "status", target = "status")
+    @Mapping(source = "tags", target = "tags")
+    @Mapping(source = "measurements", target = "measurements")
+    @Mapping(source = "salesGuide", target = "salesGuide")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "audit", ignore = true)

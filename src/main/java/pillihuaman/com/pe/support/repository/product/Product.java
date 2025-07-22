@@ -62,4 +62,10 @@ public class Product implements Serializable {
     private Date createdAt;
     private Date updatedAt;
     private AuditEntity audit;
+    private List<String> tags;
+    private List<ProductMeasurement> measurements;
+    private List<SpecificationGroup> specifications;
+
+    // ▼▼▼ AÑADIR ESTE CAMPO ▼▼▼
+    private SalesGuide salesGuide;
 }

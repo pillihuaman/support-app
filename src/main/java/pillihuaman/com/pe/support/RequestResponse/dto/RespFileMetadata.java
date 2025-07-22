@@ -26,5 +26,6 @@ public class RespFileMetadata {
     private String url;
     private String position;
     private String productId;
+    private String s3Key;
     private List<RespSizeStock> sizeStock;
 }

@@ -11,8 +11,8 @@ import pillihuaman.com.pe.support.repository.product.SizeStock;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-28T10:38:52-0500",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (JetBrains s.r.o.)"
+    date = "2025-07-20T23:12:39-0500",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (Oracle Corporation)"
 )
 @Component
 public class MapperFileMetadataImpl implements MapperFileMetadata {
@@ -39,6 +39,7 @@ public class MapperFileMetadataImpl implements MapperFileMetadata {
         respFileMetadata.url( entity.getUrl() );
         respFileMetadata.position( entity.getPosition() );
         respFileMetadata.productId( entity.getProductId() );
+        respFileMetadata.s3Key( entity.getS3Key() );
         respFileMetadata.sizeStock( sizeStockListToRespSizeStockList( entity.getSizeStock() ) );
 
         return respFileMetadata.build();
@@ -67,6 +68,7 @@ public class MapperFileMetadataImpl implements MapperFileMetadata {
         fileMetadata.position( dto.getPosition() );
         fileMetadata.productId( dto.getProductId() );
         fileMetadata.sizeStock( respSizeStockListToSizeStockList( dto.getSizeStock() ) );
+        fileMetadata.s3Key( dto.getS3Key() );
 
         return fileMetadata.build();
     }

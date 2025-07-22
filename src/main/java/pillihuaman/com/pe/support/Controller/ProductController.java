@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.lib.common.ReqBase;
 import pillihuaman.com.pe.lib.common.RespBase;
@@ -28,11 +29,24 @@ public class ProductController {
     private JwtService jwtService;
 
     // Método para guardar o actualizar un product
-    @PostMapping(path = {Constantes.BASE_ENDPOINT + Constantes.ENDPOINT + "/product"}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<RespBase<RespProduct>> saveproduct(
-            @Valid @RequestBody ReqBase<ReqProduct> request, HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok(productService.saveProduct(jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization")), request));
+    @PostMapping(
+            path = {Constantes.BASE_ENDPOINT + Constantes.ENDPOINT + "/product"},
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE} // Acepta datos y archivos
+    )
+    public ResponseEntity<RespBase<RespProduct>> saveProductWithImages(
+            // El framework convierte la parte "productData" en un objeto ReqProduct
+            @RequestPart("productData") @Valid ReqProduct productData,
+
+            // Recibe la lista de archivos de imagen (opcional)
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) {
+        MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization"));
+
+        // Llamamos al nuevo método del servicio que ahora maneja archivos
+        return ResponseEntity.ok(productService.saveProduct(token, productData, images,httpServletRequest.getHeader("Authorization")));
     }
+
+
 
     // Método para obtener un product
     @GetMapping(path = {Constantes.BASE_ENDPOINT + Constantes.ENDPOINT + "/product"}, produces = {MediaType.APPLICATION_JSON_VALUE})

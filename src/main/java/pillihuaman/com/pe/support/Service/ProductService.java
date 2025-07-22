@@ -1,6 +1,7 @@
 package pillihuaman.com.pe.support.Service;
 
 
+import org.springframework.web.multipart.MultipartFile;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.lib.common.ReqBase;
 import pillihuaman.com.pe.lib.common.RespBase;
@@ -12,7 +13,7 @@ import java.util.List;
 public interface ProductService {
 
 	// Método para guardar o actualizar un empleado
-	RespBase<RespProduct> saveProduct(MyJsonWebToken jwt, ReqBase<ReqProduct> request);
+	RespBase<RespProduct> saveProduct(MyJsonWebToken jwt, ReqProduct request,List<MultipartFile> images,String token);
 
 	// Método para obtener un empleado específico
 	RespBase<List<RespProduct>> getProduct(MyJsonWebToken jwt, ReqBase<ReqProduct> request);

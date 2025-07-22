@@ -1,6 +1,7 @@
 package pillihuaman.com.pe.support.repository.common.dao.implement;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -45,5 +46,20 @@ public class CommonDaoImplement extends AzureAbstractMongoRepositoryImpl<CommonD
             return Optional.empty();
         }
     }
-
+    @Override
+    public CommonDataDocument save(CommonDataDocument document) {
+        try {
+            MongoCollection<CommonDataDocument> collection = getCollection(COLLECTION, provideEntityClass());
+            Document filter = new Document("_id", document.getId());
+            // La opción 'upsert' crea el documento si no existe
+            ReplaceOptions options = new ReplaceOptions().upsert(true);
+            collection.replaceOne(filter, document, options);
+            logger.info("Documento de configuración con ID '{}' guardado/actualizado exitosamente.", document.getId());
+            return document;
+        } catch (Exception e) {
+            logger.error("Error al guardar/actualizar CommonDataDocument con ID '{}': {}", document.getId(), e.getMessage(), e);
+            // Considera lanzar una excepción personalizada aquí para un mejor manejo de errores.
+            throw new RuntimeException("Error al guardar el documento de configuración.", e);
+        }
+    }
 }

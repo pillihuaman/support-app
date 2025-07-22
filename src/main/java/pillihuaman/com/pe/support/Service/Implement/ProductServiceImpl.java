@@ -1,20 +1,31 @@
 package pillihuaman.com.pe.support.Service.Implement;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.lib.common.ReqBase;
 import pillihuaman.com.pe.lib.common.RespBase;
 import pillihuaman.com.pe.support.RequestResponse.RespProduct;
 import pillihuaman.com.pe.support.RequestResponse.dto.Mapper.MapperProduct;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqProduct;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespFileMetadata;
 import pillihuaman.com.pe.support.Service.ProductService;
 import pillihuaman.com.pe.support.Service.SupplierService;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqSupplier;
 import pillihuaman.com.pe.support.RequestResponse.dto.RespSupplier;
+import pillihuaman.com.pe.support.foreing.NeuroIaFileStorageService;
+import pillihuaman.com.pe.support.repository.product.FileMetadata;
 import pillihuaman.com.pe.support.repository.product.Product;
 import pillihuaman.com.pe.support.repository.product.dao.ProductDAO;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -25,18 +36,100 @@ public class ProductServiceImpl implements ProductService {
     private SupplierService supplierService;
     @Autowired
     private MapperProduct mapperProduct;
+    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+    @Autowired
+    private NeuroIaFileStorageService neuroIaFileStorageService;
+    @Autowired
+    private ObjectMapper objectMapper;
+
     // Método para guardar o actualizar un Product
     @Override
-    public RespBase<RespProduct> saveProduct(MyJsonWebToken jwt, ReqBase<ReqProduct> request) {
-        // Obtener la carga útil de la solicitud
-        ReqProduct reqProduct = request.getData();
-        Product em =mapperProduct.toProduct(reqProduct);
-        Product savedProduct = null;
-            savedProduct = productDAO.saveProduct(em,
-                    jwt);
-        RespProduct respProduct =mapperProduct.toRespProduct(savedProduct);
+    public RespBase<RespProduct> saveProduct(MyJsonWebToken jwt, ReqProduct reqProduct, List<MultipartFile> images, String rawAuthToken) {
+
+        // --- PASO 1: MAPEAR DTO A ENTIDAD Y GUARDADO INICIAL ---
+        // Se convierte el DTO del request a la entidad que se persistirá.
+        Product productToSave = mapperProduct.toProduct(reqProduct);
+
+        // Se realiza un primer guardado. Si el producto es nuevo, se le asigna un ID.
+        // Si ya existe (el DTO tenía un ID), se actualizan los campos básicos.
+        Product savedProduct = productDAO.saveProduct(productToSave, jwt);
+        String productId = savedProduct.getId().toHexString();
+        logger.info("Producto guardado/actualizado inicialmente con ID: {}. Procediendo a la subida de archivos.", productId);
+
+        // --- PASO 2: SUBIR NUEVOS ARCHIVOS (SI SE PROPORCIONARON) ---
+        if (images != null && !images.isEmpty()) {
+            try {
+                logger.debug("Subiendo {} nuevas imágenes para el producto ID: {}", images.size(), productId);
+
+                // Se crea un JSON de metadata simple para enviar al servicio de archivos.
+                List<Map<String, String>> metadataListForService = images.stream()
+                        .map(file -> Map.of("typeFile", "CATALOG"))
+                        .collect(Collectors.toList());
+                String metadataJson = objectMapper.writeValueAsString(metadataListForService);
+
+                // Se llama al servicio externo (neuroIA) para subir los archivos.
+                RespBase<List<RespFileMetadata>> fileUploadResponse = neuroIaFileStorageService.uploadFilesToNeuroIA(
+                        images.toArray(new MultipartFile[0]),
+                        metadataJson,
+                        productId,
+                        rawAuthToken
+                );
+
+                // --- PASO 3: PROCESAR LA RESPUESTA DEL SERVICIO DE ARCHIVOS ---
+                if (fileUploadResponse.getStatus().getSuccess() && fileUploadResponse.getPayload() != null) {
+                    // Si la subida fue exitosa, se mapea la respuesta a la entidad `FileMetadata`.
+                    List<FileMetadata> newFileMetadata = fileUploadResponse.getPayload().stream()
+                            .map(this::mapDtoToEntity)
+                            .collect(Collectors.toList());
+
+                    // Se asegura que la lista de metadatos en la entidad no sea nula.
+                    if (savedProduct.getFileMetadata() == null) {
+                        savedProduct.setFileMetadata(new ArrayList<>());
+                    }
+
+                    // Se AÑADEN los nuevos metadatos a la lista existente, preservando los antiguos.
+                    savedProduct.getFileMetadata().addAll(newFileMetadata);
+                    logger.info("{} nuevos metadatos de archivo han sido asociados al producto {}.", newFileMetadata.size(), productId);
+                } else {
+                    logger.error("La subida de archivos para el producto {} falló, pero el guardado del producto continuará. Razón: {}", productId, fileUploadResponse.getStatus().getError());
+                    // Dependiendo de las reglas de negocio, se podría lanzar una excepción aquí para abortar la operación.
+                }
+
+            } catch (Exception e) {
+                logger.error("Error crítico durante el proceso de subida de archivos para el producto {}. El producto fue guardado sin las nuevas imágenes.", productId, e);
+                // Aquí también se podría lanzar una excepción para abortar y revertir la transacción si fuera necesario.
+            }
+        }
+
+        // --- PASO 4: GUARDADO FINAL ---
+        // Se vuelve a guardar el producto. Esta vez, la entidad contiene la lista `fileMetadata` actualizada.
+        // MongoDB reemplazará el documento existente con esta nueva versión.
+        logger.debug("Realizando guardado final para el producto {} para persistir la metadata de archivos.", productId);
+        Product finalProduct = productDAO.saveProduct(savedProduct, jwt);
+
+        // --- PASO 5: DEVOLVER LA RESPUESTA FINAL ---
+        // Se mapea la entidad final y completa al DTO de respuesta que verá el cliente.
+        RespProduct respProduct = mapperProduct.toRespProduct(finalProduct);
         return new RespBase<>(respProduct);
     }
+
+    /**
+     * Método de utilidad para convertir el DTO de respuesta del servicio de archivos
+     * a la entidad `FileMetadata` que se persiste dentro del documento `Product`.
+     */
+    private FileMetadata mapDtoToEntity(RespFileMetadata dto) {
+        if (dto == null) return null;
+        return FileMetadata.builder()
+                .id(dto.getId())
+                .filename(dto.getFilename())
+                .url(dto.getUrl())
+                .contentType(dto.getContentType())
+                .size(dto.getSize())
+                .position(dto.getPosition())
+                .typeFile(dto.getTypeFile())
+                .build();
+    }
+
 
     // Método para obtener un Product específico
     @Override
@@ -46,7 +139,7 @@ public class ProductServiceImpl implements ProductService {
             return new RespBase<>(null);
         }
         List<RespProduct> responseList = products.stream().map(product -> {
-            RespProduct resp =mapperProduct.toRespProduct(product);
+            RespProduct resp = mapperProduct.toRespProduct(product);
             // Si hay supplierId, busca el nombre y lo asigna
             if (resp.getSupplierId() != null && !resp.getSupplierId().isEmpty()) {
                 ReqSupplier reqSupplier = ReqSupplier.builder()
