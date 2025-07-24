@@ -78,6 +78,7 @@ public class QuotationController {
          * ENDPOINT DE ACTUALIZACIÓN (NUEVO)
          * =========================================================================================
          */
+
         @PutMapping(
                 path = {Constantes.BASE_ENDPOINT + Constantes.ENDPOINT + "/quotations/{id}"},
                 consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
@@ -87,11 +88,13 @@ public class QuotationController {
                 @RequestPart("quotationData") ReqQuotation reqQuotation,
                 @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
                 @RequestPart(value = "referenceImages", required = false) List<MultipartFile> referenceImages,
+                // ▼▼▼ CORRECCIÓN ▼▼▼
+                // Es más estándar usar @RequestPart para listas en multipart, aunque @RequestParam puede funcionar.
+                // Para mantener consistencia, lo dejamos como @RequestParam ya que el frontend lo envía así.
                 @RequestParam(value = "filesToDelete", required = false) List<String> filesToDelete
         ) {
             try {
                 MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization"));
-
                 RespBase<RespQuotation> response = quotationService.updateQuotation(
                         id,
                         reqQuotation,
@@ -101,11 +104,8 @@ public class QuotationController {
                         token,
                         httpServletRequest.getHeader("Authorization")
                 );
-
                 return ResponseEntity.ok(response);
-
             } catch (Exception e) {
-                // ... (mismo manejo de errores que en createQuotation)
                 RespBase.Status.Error error = RespBase.Status.Error.builder()
                         .code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()))
                         .messages(List.of("Error interno al actualizar la cotización: " + e.getMessage()))
@@ -115,6 +115,8 @@ public class QuotationController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
             }
         }
+
+
 
     /**
      * Endpoint para obtener una cotización por su ID.

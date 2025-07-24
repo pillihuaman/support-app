@@ -28,4 +28,5 @@ public class Quotation implements Serializable {
     private AuditEntity audit;
     private String status; // Ej: PENDING, APPROVED, IN_PRODUCTION, COMPLETED
     private boolean aceptaTerminos;
+    private String  tipoCostoProduccion;
 }

@@ -20,4 +20,5 @@ public class RespQuotation {
     private String createdAt;
     private String updatedAt;
     private boolean aceptaTerminos;
+    private String  tipoCostoProduccion;
 }

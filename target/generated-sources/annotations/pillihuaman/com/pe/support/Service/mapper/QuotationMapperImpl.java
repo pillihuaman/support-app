@@ -15,7 +15,7 @@ import pillihuaman.com.pe.support.repository.bussiness.QuotationItem;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-07-20T23:12:40-0500",
+    date = "2025-07-23T10:42:33-0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (Oracle Corporation)"
 )
 @Component
@@ -31,8 +31,9 @@ public class QuotationMapperImpl implements QuotationMapper {
 
         quotation.customerInfo( reqQuotationToCustomerInfo( req ) );
         quotation.designDetails( reqQuotationToDesignDetails( req ) );
-        quotation.items( itemListToQuotationItemList( req.getItems() ) );
+        quotation.items( mapItemsToEntity( req.getItems() ) );
         quotation.aceptaTerminos( req.isAceptaTerminos() );
+        quotation.tipoCostoProduccion( req.getTipoCostoProduccion() );
 
         return quotation.build();
     }
@@ -52,7 +53,7 @@ public class QuotationMapperImpl implements QuotationMapper {
         }
         reqQuotationToDesignDetails1( dto, entity.getDesignDetails() );
         if ( entity.getItems() != null ) {
-            List<QuotationItem> list = itemListToQuotationItemList( dto.getItems() );
+            List<QuotationItem> list = mapItemsToEntity( dto.getItems() );
             if ( list != null ) {
                 entity.getItems().clear();
                 entity.getItems().addAll( list );
@@ -62,12 +63,13 @@ public class QuotationMapperImpl implements QuotationMapper {
             }
         }
         else {
-            List<QuotationItem> list = itemListToQuotationItemList( dto.getItems() );
+            List<QuotationItem> list = mapItemsToEntity( dto.getItems() );
             if ( list != null ) {
                 entity.setItems( list );
             }
         }
         entity.setAceptaTerminos( dto.isAceptaTerminos() );
+        entity.setTipoCostoProduccion( dto.getTipoCostoProduccion() );
     }
 
     @Override
@@ -82,9 +84,23 @@ public class QuotationMapperImpl implements QuotationMapper {
         quotationItem.shirtNumber( item.getNumeroCamisa() );
         quotationItem.size( item.getTalla() );
         quotationItem.quantity( item.getCantidad() );
-        quotationItem.isFullSet( item.isEsConjuntoCompleto() );
+        quotationItem.isFullSet( item.isFullSet() );
 
         return quotationItem.build();
+    }
+
+    @Override
+    public List<QuotationItem> mapItemsToEntity(List<ReqQuotation.Item> items) {
+        if ( items == null ) {
+            return null;
+        }
+
+        List<QuotationItem> list = new ArrayList<QuotationItem>( items.size() );
+        for ( ReqQuotation.Item item : items ) {
+            list.add( toQuotationItem( item ) );
+        }
+
+        return list;
     }
 
     @Override
@@ -107,6 +123,7 @@ public class QuotationMapperImpl implements QuotationMapper {
         respQuotation.setDesignDetails( entity.getDesignDetails() );
         respQuotation.setTotals( entity.getTotals() );
         respQuotation.setStatus( entity.getStatus() );
+        respQuotation.setTipoCostoProduccion( entity.getTipoCostoProduccion() );
 
         return respQuotation;
     }
@@ -135,19 +152,6 @@ public class QuotationMapperImpl implements QuotationMapper {
         designDetails.detailedDescription( reqQuotation.getDescripcionDetallada() );
 
         return designDetails.build();
-    }
-
-    protected List<QuotationItem> itemListToQuotationItemList(List<ReqQuotation.Item> list) {
-        if ( list == null ) {
-            return null;
-        }
-
-        List<QuotationItem> list1 = new ArrayList<QuotationItem>( list.size() );
-        for ( ReqQuotation.Item item : list ) {
-            list1.add( toQuotationItem( item ) );
-        }
-
-        return list1;
     }
 
     protected void reqQuotationToCustomerInfo1(ReqQuotation reqQuotation, CustomerInfo mappingTarget) {

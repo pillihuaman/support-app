@@ -11,69 +11,60 @@ import pillihuaman.com.pe.support.repository.bussiness.Quotation;
 import pillihuaman.com.pe.support.repository.bussiness.QuotationItem;
 
 import java.util.Date;
+import java.util.List; // Asegúrate de tener este import
 
 @Mapper(componentModel = "spring")
 public interface QuotationMapper {
 
-    // --- MAPPING: ReqQuotation (DTO de Entrada) -> Quotation (Entidad de BD) ---
-
-    /**
-     * Mapea el DTO de la petición a la entidad que se guardará en la base de datos.
-     * La clave es usar los nombres de campo EXACTOS del DTO de origen (source).
-     */
-    @Mapping(source = "clienteNombre", target = "customerInfo.contactName") // CORREGIDO: source es "clienteNombre"
-    @Mapping(source = "clienteEmail", target = "customerInfo.contactEmail")   // CORREGIDO: source es "clienteEmail"
-    @Mapping(source = "clienteTelefono", target = "customerInfo.contactPhone") // CORREGIDO: source es "clienteTelefono"
+    // ... (El método toEntity se queda como está) ...
+    @Mapping(source = "clienteNombre", target = "customerInfo.contactName")
+    @Mapping(source = "clienteEmail", target = "customerInfo.contactEmail")
+    @Mapping(source = "clienteTelefono", target = "customerInfo.contactPhone")
     @Mapping(source = "descripcionDetallada", target = "designDetails.detailedDescription")
-    // CORREGIDO: source es "descripcionDetallada"
-    @Mapping(source = "items", target = "items") // MapStruct usará el helper toQuotationItem para esta lista
-    @Mapping(target = "id", ignore = true)        // Ignoramos campos que se generan automáticamente
+    @Mapping(source = "items", target = "items")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "totals", ignore = true)
     @Mapping(target = "audit", ignore = true)
     @Mapping(target = "status", ignore = true)
     Quotation toEntity(ReqQuotation req);
 
-
+    // ... (El método updateEntityFromDto se queda como está, lo necesitamos para referencia) ...
     @Mapping(source = "clienteNombre", target = "customerInfo.contactName")
     @Mapping(source = "clienteEmail", target = "customerInfo.contactEmail")
     @Mapping(source = "clienteTelefono", target = "customerInfo.contactPhone")
     @Mapping(source = "descripcionDetallada", target = "designDetails.detailedDescription")
     @Mapping(source = "items", target = "items")
     @Mapping(source = "aceptaTerminos", target = "aceptaTerminos")
-    @Mapping(target = "id", ignore = true) // Ignoramos el ID y la auditoría para no sobreescribirlos
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "totals", ignore = true)
     @Mapping(target = "audit", ignore = true)
     @Mapping(target = "status", ignore = true)
     void updateEntityFromDto(ReqQuotation dto, @MappingTarget Quotation entity);
 
-    /**
-     * ===================================================================================
-     * SEGUNDA CORRECCIÓN: MAPEO DE LA LISTA INTERNA
-     * ===================================================================================
-     * MapStruct necesita saber cómo convertir un objeto `ReqQuotation.Item` a `QuotationItem`
-     * porque sus campos internos también tienen nombres diferentes (ej: nombre vs playerName).
-     * Al definir este método, MapStruct lo usará automáticamente al mapear la lista `items`.
-     */
+    // ... (El método toQuotationItem se queda como está) ...
     @Mapping(source = "nombre", target = "playerName")
     @Mapping(source = "numeroCamisa", target = "shirtNumber")
     @Mapping(source = "talla", target = "size")
     @Mapping(source = "cantidad", target = "quantity")
-    // --- CAMBIO CLAVE ---
-    // El source ahora es "esConjuntoCompleto" y el target sigue siendo "isFullSet".
-    @Mapping(source = "esConjuntoCompleto", target = "isFullSet")
+    @Mapping(source = "fullSet", target = "isFullSet")
+    QuotationItem toQuotationItem(ReqQuotation.Item item);
 
-    QuotationItem toQuotationItem(ReqQuotation.Item item);;
+    // ▼▼▼ MÉTODO AÑADIDO ▼▼▼
+    /**
+     * Convierte una lista de DTOs de items a una lista de entidades de items.
+     * MapStruct usará automáticamente el método toQuotationItem para cada elemento.
+     * @param items La lista de items del DTO de entrada.
+     * @return La lista de items de la entidad.
+     */
+    List<QuotationItem> mapItemsToEntity(List<ReqQuotation.Item> items);
 
-    // --- MAPPING: Quotation (Entidad de BD) -> RespQuotation (DTO de Salida) ---
-    // (Este mapeo generalmente es correcto)
+
+    // ... (El método toDto y los métodos auxiliares se quedan como están) ...
     @Mapping(source = "id", target = "id", qualifiedByName = "objectIdToString")
     @Mapping(source = "audit.dateRegister", target = "createdAt", qualifiedByName = "dateToString")
     @Mapping(source = "audit.dateUpdate", target = "updatedAt", qualifiedByName = "dateToString")
     @Mapping(source = "aceptaTerminos", target = "aceptaTerminos")
     RespQuotation toDto(Quotation entity);
-
-
-    // --- MÉTODOS AUXILIARES (sin cambios) ---
 
     @Named("objectIdToString")
     default String objectIdToString(ObjectId id) {

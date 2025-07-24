@@ -13,5 +13,5 @@ public class QuotationItem {
     private Integer shirtNumber;  // Corresponde a 'numeroCamisa'
     private String size;          // Corresponde a 'talla'
     private int quantity;         // Corresponde a 'cantidad'
-    private boolean isFullSet;    // Corresponde a 'esConjuntoCompleto'
+    private boolean isFullSet;    // Corresponde a 'fullSet'
 }
