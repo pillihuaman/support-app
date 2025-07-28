@@ -4,15 +4,21 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/../../../pillihuaman-com-pe-basebd-lib/pom.xml" />
         <option value="$PROJECT_DIR$/../pillihuaman-com-pe-security-app/pom.xml" />
         <option value="$PROJECT_DIR$/../pillihuaman-imagen-app/pom.xml" />
         <option value="$PROJECT_DIR$/../pillihuaman-com-pe-support/pom.xml" />
         <option value="$PROJECT_DIR$/../../../../../../pillihuaman.com.base.lib/pom.xml" />
+        <option value="$PROJECT_DIR$/../pillihuaman-com-pe-base-lib/pom.xml" />
         <option value="$PROJECT_DIR$/../pillihuaman-com-pe-security/pom.xml" />
         <option value="$PROJECT_DIR$/../pillihuaman-com-pe-neuroIA/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/../pillihuaman-com-pe-base-lib/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="17 (2)" project-jdk-type="JavaSDK" />
