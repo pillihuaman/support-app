@@ -21,6 +21,6 @@ WORKDIR /app
 
 COPY --from=build /app/target/pillihuaman-com-support-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE 8085
+EXPOSE 8091
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
