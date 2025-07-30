@@ -11,7 +11,7 @@ import pillihuaman.com.pe.support.repository.product.SizeStock;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-07-28T10:35:08-0500",
+    date = "2025-07-30T11:20:40-0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Amazon.com Inc.)"
 )
 @Component

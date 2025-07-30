@@ -5,67 +5,68 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * Configuración centralizada de la seguridad de la aplicación.
+ * Define qué rutas son públicas, cuáles están protegidas y el manejo de sesiones.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final CorsProperties corsProperties;
 
-    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthFilter, CorsProperties corsProperties) {
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    // El constructor ahora es más simple, solo necesita el filtro JWT.
+    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
-        this.corsProperties = corsProperties;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                // Deshabilitamos CSRF (práctica común para APIs sin estado)
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // Habilitamos CORS usando la configuración global definida en WebConfig.java
+                .cors(withDefaults())
+
+                // Definimos las reglas de autorización para las rutas
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/auth/**",          // Endpoints públicos de autenticación
-                                "/swagger-ui/**",           // Swagger UI
-                                "/v3/api-docs/**",          // Documentación OpenAPI
+                                // Rutas públicas para la documentación de la API (Swagger/OpenAPI)
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
                                 "/swagger-resources/**",
-                                "/webjars/**",
-                                "/configuration/ui"
-                              //  "/configuration/security", "/v1/support/system/menu-tree"
-                        ).permitAll()
-                        .anyRequest().authenticated()
+                                "/webjars/**"
+                                // Si tuvieras algún endpoint PÚBLICO en 'support', iría aquí.
+                                // Ejemplo: "/public/v1/support/products"
+                        ).permitAll() // Permite el acceso a estas rutas sin autenticación.
+
+                        .anyRequest().authenticated() // CUALQUIER OTRA ruta requiere autenticación.
                 )
+
+                // Configuramos la gestión de sesiones para que sea SIN ESTADO
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
+                // Añadimos nuestro filtro JWT para que se ejecute antes del filtro de autenticación estándar
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // Configuramos la funcionalidad de logout (aunque generalmente no se usa en APIs sin estado)
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );
 
         return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(corsProperties.getAllowedOrigins());
-        config.setAllowedMethods(corsProperties.getAllowedMethods());
-        config.setAllowedHeaders(corsProperties.getAllowedHeaders());
-        config.setAllowCredentials(corsProperties.isAllowCredentials());
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
     }
 }
