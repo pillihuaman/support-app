@@ -9,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pillihuaman.com.pe.lib.common.AuditEntity;
+import pillihuaman.com.pe.support.RequestResponse.RespProduct;
 import pillihuaman.com.pe.support.repository.product.dao.SizeStock;
 
 import java.io.Serializable;
@@ -65,7 +66,7 @@ public class Product implements Serializable {
     private List<String> tags;
     private List<ProductMeasurement> measurements;
     private List<SpecificationGroup> specifications;
-
     // ▼▼▼ AÑADIR ESTE CAMPO ▼▼▼
     private SalesGuide salesGuide;
+    private List<QuantityBasedPrice> quantityPricing;
 }

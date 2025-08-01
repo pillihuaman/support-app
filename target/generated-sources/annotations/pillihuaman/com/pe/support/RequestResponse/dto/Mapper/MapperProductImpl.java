@@ -18,12 +18,13 @@ import pillihuaman.com.pe.support.repository.product.ProductInventory;
 import pillihuaman.com.pe.support.repository.product.ProductMeasurement;
 import pillihuaman.com.pe.support.repository.product.ProductMedia;
 import pillihuaman.com.pe.support.repository.product.ProductPricing;
+import pillihuaman.com.pe.support.repository.product.QuantityBasedPrice;
 import pillihuaman.com.pe.support.repository.product.SizeStock;
 import pillihuaman.com.pe.support.repository.product.SpecificationGroup;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-07-30T11:20:40-0500",
+    date = "2025-07-31T22:26:42-0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Amazon.com Inc.)"
 )
 @Component
@@ -72,6 +73,7 @@ public class MapperProductImpl implements MapperProduct {
         if ( list3 != null ) {
             respProduct.setSpecifications( new ArrayList<SpecificationGroup>( list3 ) );
         }
+        respProduct.setQuantityPricing( quantityBasedPriceListToQuantityBasedPriceList( product.getQuantityPricing() ) );
 
         return respProduct;
     }
@@ -122,6 +124,7 @@ public class MapperProductImpl implements MapperProduct {
         if ( list3 != null ) {
             product.specifications( new ArrayList<SpecificationGroup>( list3 ) );
         }
+        product.quantityPricing( quantityBasedPriceListToQuantityBasedPriceList1( reqProduct.getQuantityPricing() ) );
 
         return product.build();
     }
@@ -210,6 +213,34 @@ public class MapperProductImpl implements MapperProduct {
         List<RespFileMetadata> list1 = new ArrayList<RespFileMetadata>( list.size() );
         for ( FileMetadata fileMetadata : list ) {
             list1.add( mapperFileMetadata.toDto( fileMetadata ) );
+        }
+
+        return list1;
+    }
+
+    protected pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice quantityBasedPriceToQuantityBasedPrice(QuantityBasedPrice quantityBasedPrice) {
+        if ( quantityBasedPrice == null ) {
+            return null;
+        }
+
+        pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice quantityBasedPrice1 = new pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice();
+
+        quantityBasedPrice1.setSize( quantityBasedPrice.getSize() );
+        quantityBasedPrice1.setDescription( quantityBasedPrice.getDescription() );
+        quantityBasedPrice1.setMinQuantity( quantityBasedPrice.getMinQuantity() );
+        quantityBasedPrice1.setUnitPrice( quantityBasedPrice.getUnitPrice() );
+
+        return quantityBasedPrice1;
+    }
+
+    protected List<pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice> quantityBasedPriceListToQuantityBasedPriceList(List<QuantityBasedPrice> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice> list1 = new ArrayList<pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice>( list.size() );
+        for ( QuantityBasedPrice quantityBasedPrice : list ) {
+            list1.add( quantityBasedPriceToQuantityBasedPrice( quantityBasedPrice ) );
         }
 
         return list1;
@@ -339,6 +370,34 @@ public class MapperProductImpl implements MapperProduct {
         List<FileMetadata> list1 = new ArrayList<FileMetadata>( list.size() );
         for ( ReqFileMetadata reqFileMetadata : list ) {
             list1.add( reqFileMetadataToFileMetadata( reqFileMetadata ) );
+        }
+
+        return list1;
+    }
+
+    protected QuantityBasedPrice quantityBasedPriceToQuantityBasedPrice1(pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice quantityBasedPrice) {
+        if ( quantityBasedPrice == null ) {
+            return null;
+        }
+
+        QuantityBasedPrice quantityBasedPrice1 = new QuantityBasedPrice();
+
+        quantityBasedPrice1.setSize( quantityBasedPrice.getSize() );
+        quantityBasedPrice1.setDescription( quantityBasedPrice.getDescription() );
+        quantityBasedPrice1.setMinQuantity( quantityBasedPrice.getMinQuantity() );
+        quantityBasedPrice1.setUnitPrice( quantityBasedPrice.getUnitPrice() );
+
+        return quantityBasedPrice1;
+    }
+
+    protected List<QuantityBasedPrice> quantityBasedPriceListToQuantityBasedPriceList1(List<pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<QuantityBasedPrice> list1 = new ArrayList<QuantityBasedPrice>( list.size() );
+        for ( pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice quantityBasedPrice : list ) {
+            list1.add( quantityBasedPriceToQuantityBasedPrice1( quantityBasedPrice ) );
         }
 
         return list1;

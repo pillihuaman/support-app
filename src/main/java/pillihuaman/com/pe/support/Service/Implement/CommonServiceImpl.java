@@ -7,6 +7,7 @@ import pillihuaman.com.pe.support.Service.CommonService;
 import pillihuaman.com.pe.support.repository.common.CommonDataDocument;
 import pillihuaman.com.pe.support.repository.common.dao.CommonDAO;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -25,6 +26,11 @@ public class CommonServiceImpl implements CommonService {
         docToSave.getData().putAll(req.getData()); // Copia todos los datos del mapa
 
         return commonDAO.save(docToSave);
+    }
+
+    @Override
+    public List<CommonDataDocument> findAllByIds(List<String> ids) {
+        return commonDAO.findAllByIds(ids);
     }
 }
 

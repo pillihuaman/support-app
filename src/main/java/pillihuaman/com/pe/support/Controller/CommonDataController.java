@@ -11,6 +11,8 @@ import pillihuaman.com.pe.support.Service.CommonService;
 import pillihuaman.com.pe.support.repository.common.CommonDataDocument;
 import pillihuaman.com.pe.support.repository.common.dao.CommonDAO;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -34,5 +36,18 @@ public class CommonDataController {
 
         CommonDataDocument savedDocument = commonService.saveOrUpdate(req);
         return ResponseEntity.ok(new RespBase<>(savedDocument));
+    }
+
+    @PostMapping("/common/default-data/batch") // Usamos POST para enviar una lista en el body
+    public ResponseEntity<RespBase<List<CommonDataDocument>>> getCommonDataByIds(
+            @RequestBody List<String> ids) {
+        List<CommonDataDocument> result = commonService.findAllByIds(ids);
+        if (result != null && !result.isEmpty()) {
+            return ResponseEntity.ok(new RespBase<>(result));
+        } else {
+            // Puedes devolver notFound o simplemente una lista vacía con código 200 OK.
+            // Devolver OK con una lista vacía suele ser más práctico para el frontend.
+            return ResponseEntity.ok(new RespBase<>(new ArrayList<>()));
+        }
     }
 }

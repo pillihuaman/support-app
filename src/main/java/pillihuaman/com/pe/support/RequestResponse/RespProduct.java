@@ -57,7 +57,7 @@ public class RespProduct {
     private Boolean status;
     private List<SpecificationGroup> specifications;
     private SalesGuide salesGuide;
-
+    private List<QuantityBasedPrice> quantityPricing;
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -94,6 +94,7 @@ public class RespProduct {
         private String seoTitle;
         private String seoDescription;
     }
+
 
 }
 

@@ -131,12 +131,7 @@
             <artifactId>mapstruct</artifactId>
             <version>1.5.5.Final</version>
         </dependency>
-        <!--   <dependency>
-             <groupId>pillihuaman.com.pe</groupId>
-             <artifactId>pillihuaman.com.pe.lib</artifactId>
-             <version>0.0.1-SNAPSHOT</version>
-             <scope>compile</scope>
-         </dependency>r -->
+
 
         <dependency>
             <groupId>pillihuaman.com.pe</groupId>
@@ -172,12 +167,6 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.4.0</version> <!-- Check for the latest version -->
-        </dependency>
-        <dependency>
-            <groupId>pillihuaman.com.pe</groupId>
-            <artifactId>pillihuaman.com.pe.lib</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
     <repositories>

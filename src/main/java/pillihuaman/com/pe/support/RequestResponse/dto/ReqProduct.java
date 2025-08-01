@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice;
+import pillihuaman.com.pe.support.RequestResponse.RespProduct;
 import pillihuaman.com.pe.support.repository.product.ProductMeasurement;
 import pillihuaman.com.pe.support.repository.product.SalesGuide;
 import pillihuaman.com.pe.support.repository.product.SpecificationGroup;
@@ -56,7 +58,7 @@ public class ReqProduct {
     private SalesGuide salesGuide;
     // Status & Audit
     private Boolean status;
-
+    private List<QuantityBasedPrice> quantityPricing;
     // Clases internas anidadas o referencias externas
     @Data
     @NoArgsConstructor

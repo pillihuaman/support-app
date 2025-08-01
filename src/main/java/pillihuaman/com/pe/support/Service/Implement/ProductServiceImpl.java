@@ -77,19 +77,20 @@ public class ProductServiceImpl implements ProductService {
 
                 // --- PASO 3: PROCESAR LA RESPUESTA DEL SERVICIO DE ARCHIVOS ---
                 if (fileUploadResponse.getStatus().getSuccess() && fileUploadResponse.getPayload() != null) {
-                    // Si la subida fue exitosa, se mapea la respuesta a la entidad `FileMetadata`.
                     List<FileMetadata> newFileMetadata = fileUploadResponse.getPayload().stream()
                             .map(this::mapDtoToEntity)
                             .collect(Collectors.toList());
 
-                    // Se asegura que la lista de metadatos en la entidad no sea nula.
+                    // 🔽 Aquí seteas la posición
+                    newFileMetadata.forEach(file -> file.setPosition("ASIGNADA"));
+
                     if (savedProduct.getFileMetadata() == null) {
                         savedProduct.setFileMetadata(new ArrayList<>());
                     }
 
-                    // Se AÑADEN los nuevos metadatos a la lista existente, preservando los antiguos.
                     savedProduct.getFileMetadata().addAll(newFileMetadata);
                     logger.info("{} nuevos metadatos de archivo han sido asociados al producto {}.", newFileMetadata.size(), productId);
+
                 } else {
                     logger.error("La subida de archivos para el producto {} falló, pero el guardado del producto continuará. Razón: {}", productId, fileUploadResponse.getStatus().getError());
                     // Dependiendo de las reglas de negocio, se podría lanzar una excepción aquí para abortar la operación.

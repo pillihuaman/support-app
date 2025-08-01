@@ -43,55 +43,61 @@ public class ProductViewServiceImpl implements ProductViewService {
                 .build();
         productViewDAO.saveView(view);
 
-        return new RespBase<>(RespProductView.builder()
+        RespBase<RespProductView> response = new RespBase<>();
+        response.setData(RespProductView.builder()
                 .id(view.getId().toHexString())
                 .productId(view.getProductId().toHexString())
                 .fileId(view.getFileId() != null ? view.getFileId().toHexString() : null)
                 .userId(view.getUserId())
                 .build());
+
+        response.setStatus(RespBase.Status.builder().success(true).build());
+        response.setTrace(new RespBase.Trace(jwt.getId()));
+        return response;
     }
+
     @Override
     public RespBase<List<RespImagenProductRank>> getViews(MyJsonWebToken jwt) {
         List<ObjectId> mostViewedProductIds = productViewDAO.getMostViewedProductIds(67);
-
         List<RespImagenProductRank> ranks = new ArrayList<>();
 
         if (mostViewedProductIds == null || mostViewedProductIds.isEmpty()) {
-            // Si no hay ranking, obtener todos los productos
             List<Product> allProducts = productDAO.listProducts(new ReqProduct());
             for (Product product : allProducts) {
-                RespImagenProductRank rank = RespImagenProductRank.builder()
+                ranks.add(RespImagenProductRank.builder()
                         .respProduct(mapperProduct.toRespProduct(product))
                         .respProductView(null)
-                        .build();
-                ranks.add(rank);
+                        .build());
             }
-            return new RespBase<>(ranks);
-        }
-
-        // Si hay IDs, buscar solo esos productos
-        for (ObjectId id : mostViewedProductIds) {
-            Optional<Product> optionalProduct = Optional.ofNullable(productDAO.findOneById(Filters.eq("_id", id)));
-            if (optionalProduct.isPresent()) {
-                Product product = optionalProduct.get();
-                RespImagenProductRank rank = RespImagenProductRank.builder()
-                        .respProduct(mapperProduct.toRespProduct(product))
-                        .respProductView(toDto(productViewDAO.findOneById(Filters.eq("_id", id))))
-                        .build();
-                ranks.add(rank);
+        } else {
+            for (ObjectId id : mostViewedProductIds) {
+                Product product = productDAO.findOneById(Filters.eq("_id", id));
+                if (product != null) {
+                    ranks.add(RespImagenProductRank.builder()
+                            .respProduct(mapperProduct.toRespProduct(product))
+                            .respProductView(toDto(productViewDAO.findOneById(Filters.eq("_id", id))))
+                            .build());
+                }
             }
         }
 
-
-        return new RespBase<>(ranks);
+        RespBase<List<RespImagenProductRank>> response = new RespBase<>();
+        response.setData(ranks);
+        response.setStatus(RespBase.Status.builder().success(true).build());
+        response.setTrace(new RespBase.Trace(jwt.getId()));
+        return response;
     }
 
     @Override
     public RespBase<List<RespProductView>> getViewsByUserId(MyJsonWebToken jwt, String userId) {
         List<ProductView> views = productViewDAO.findByUserId(userId);
-        return new RespBase<>(views.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList()));
+        List<RespProductView> viewDtos = views.stream().map(this::toDto).collect(Collectors.toList());
+
+        RespBase<List<RespProductView>> response = new RespBase<>();
+        response.setData(viewDtos);
+        response.setStatus(RespBase.Status.builder().success(true).build());
+        response.setTrace(new RespBase.Trace(jwt.getId()));
+        return response;
     }
 
     @Override
@@ -102,7 +108,12 @@ public class ProductViewServiceImpl implements ProductViewService {
                         .productId(id.toHexString())
                         .build())
                 .collect(Collectors.toList());
-        return new RespBase<>(topViews);
+
+        RespBase<List<RespProductView>> response = new RespBase<>();
+        response.setData(topViews);
+        response.setStatus(RespBase.Status.builder().success(true).build());
+        response.setTrace(new RespBase.Trace(jwt.getId()));
+        return response;
     }
 
     private RespProductView toDto(ProductView view) {
