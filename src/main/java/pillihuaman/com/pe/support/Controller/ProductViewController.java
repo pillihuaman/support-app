@@ -43,6 +43,21 @@ public class ProductViewController {
         return ResponseEntity.ok(productViewService.getViews(token));
     }
 
+        @GetMapping(path = "/by-productById/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<RespBase<RespImagenProductRank>> getProductByProductId(@PathVariable String productId) {
+            MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization"));
+            return ResponseEntity.ok(productViewService.getViewsByIdProduct(productId));
+        }
+
+
+
+    @GetMapping(path = "/by-product", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RespBase<List<RespProductView>>> getViewsByProduct(@RequestParam String userId) {
+        MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization"));
+        return ResponseEntity.ok(productViewService.getViewsByUserId(token, userId));
+    }
+
+
     @GetMapping(path = "/by-user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RespBase<List<RespProductView>>> getViewsByUser(@RequestParam String userId) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization"));

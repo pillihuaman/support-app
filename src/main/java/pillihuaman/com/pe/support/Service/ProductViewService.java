@@ -17,5 +17,6 @@ public interface ProductViewService {
     RespBase<List<RespProductView>> getViewsByUserId(MyJsonWebToken jwt, String userId);
 
     RespBase<List<RespProductView>> getTopViewedProducts(MyJsonWebToken jwt, int limit);
+    RespBase<RespImagenProductRank> getViewsByIdProduct(String idProduct);
 }
 

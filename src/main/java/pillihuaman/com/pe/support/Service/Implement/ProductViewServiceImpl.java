@@ -58,7 +58,7 @@ public class ProductViewServiceImpl implements ProductViewService {
 
     @Override
     public RespBase<List<RespImagenProductRank>> getViews(MyJsonWebToken jwt) {
-        List<ObjectId> mostViewedProductIds = productViewDAO.getMostViewedProductIds(67);
+        List<ObjectId> mostViewedProductIds = productViewDAO.getMostViewedProductIds();
         List<RespImagenProductRank> ranks = new ArrayList<>();
 
         if (mostViewedProductIds == null || mostViewedProductIds.isEmpty()) {
@@ -88,6 +88,42 @@ public class ProductViewServiceImpl implements ProductViewService {
         return response;
     }
 
+
+    @Override
+    public RespBase<RespImagenProductRank> getViewsByIdProduct(String idProduct) {
+        // 1. Inicializamos la lista, aunque ahora solo buscamos un solo producto
+        List<RespImagenProductRank> ranks = new ArrayList<>();
+
+        // 2. Buscamos el producto por su ID
+        Product product = productDAO.findOneById(Filters.eq("_id", new ObjectId(idProduct)));
+
+        // 3. Validamos si el producto fue encontrado (no es null)
+        if (product != null) {
+            ranks.add(RespImagenProductRank.builder()
+                    .respProduct(mapperProduct.toRespProduct(product))
+                    .build());
+        }
+
+        // 4. Creamos la respuesta base
+        RespBase<RespImagenProductRank> response = new RespBase<>();
+
+        // 5. Validamos si la lista 'ranks' tiene al menos un elemento antes de acceder a él
+        if (!ranks.isEmpty()) {
+            response.setData(ranks.get(0));
+            response.getStatus().setSuccess(true);
+        } else {
+            // 6. Si no se encontró el producto, configuramos la respuesta para indicar el error
+            response.setData(null);
+            response.getStatus().setSuccess(false);
+        }
+
+        // 7. Configuración del trace, que es independiente del éxito de la operación
+        response.setTrace(new RespBase.Trace("true"));
+
+        return response;
+    }
+
+
     @Override
     public RespBase<List<RespProductView>> getViewsByUserId(MyJsonWebToken jwt, String userId) {
         List<ProductView> views = productViewDAO.findByUserId(userId);
@@ -102,7 +138,7 @@ public class ProductViewServiceImpl implements ProductViewService {
 
     @Override
     public RespBase<List<RespProductView>> getTopViewedProducts(MyJsonWebToken jwt, int limit) {
-        List<ObjectId> topIds = productViewDAO.getMostViewedProductIds(limit);
+        List<ObjectId> topIds = productViewDAO.getMostViewedProductIds();
         List<RespProductView> topViews = topIds.stream()
                 .map(id -> RespProductView.builder()
                         .productId(id.toHexString())
@@ -124,4 +160,6 @@ public class ProductViewServiceImpl implements ProductViewService {
                 .userId(view.getUserId())
                 .build();
     }
+
+
 }

@@ -97,18 +97,18 @@ public class ProductViewDaoImplement extends AzureAbstractMongoRepositoryImpl<Pr
 
     // Retorna IDs de productos más vistos
     @Override
-    public List<ObjectId> getMostViewedProductIds(int limit) {
+    public List<ObjectId> getMostViewedProductIds() {
         return countViewsGroupedByProductId().stream()
-                .limit(limit)
+                //.limit(limit)
                 .map(doc -> doc.get("_id", ObjectId.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ProductView findByProductId(ObjectId productId) {
+    public ProductView findByProductId(String productId) {
         MongoCollection<ProductView> collection = getCollection(COLLECTION, ProductView.class);
         return collection
-                .find(Filters.eq("_id", productId))
+                .find(Filters.eq("_id",  new ObjectId( productId)))
                 .sort(Sorts.descending("viewedAt"))  // Por si hay múltiples, toma la más reciente
                 .first();
     }

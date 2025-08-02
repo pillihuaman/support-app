@@ -23,8 +23,9 @@ public interface ProducViewtDAO extends BaseMongoRepository<ProductView> {
     List<ProductView> findByUserId(String userId);
 
     // Obtiene los productos más vistos
-    List<ObjectId> getMostViewedProductIds(int limit);
+    List<ObjectId> getMostViewedProductIds();
     // Busca una vista por productId (opcionalmente la más reciente si hay varias)
 
-    ProductView findByProductId(ObjectId productId);
+    ProductView findByProductId(String productId);
+
 }
