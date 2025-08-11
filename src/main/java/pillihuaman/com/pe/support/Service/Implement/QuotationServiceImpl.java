@@ -193,7 +193,7 @@ public class QuotationServiceImpl implements QuotationService {
                     .map(configDoc -> {
                         try {
                             logger.info("Configuración de costos con ID '{}' encontrada. Mapeando objeto anidado.", configId);
-                            Object data = configDoc.getData();
+                            Object data = configDoc.getPayload();
 
                             // Paso 1: Convertir el objeto completo (CommonDataDocument) a un string JSON.
                             String jsonString = objectMapper.writeValueAsString(data);

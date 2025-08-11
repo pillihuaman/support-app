@@ -22,7 +22,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public RespBase<RespStore> saveStore(MyJsonWebToken jwt, ReqBase<ReqStore> request) {
-        ReqStore reqStore = request.getData();
+        ReqStore reqStore = request.getPayload();
         Store store = MapperStore.INSTANCE.toStore(reqStore);
         Store savedStore = storeDAO.saveStore(store, jwt);
         RespStore respStore = MapperStore.INSTANCE.toRespStore(savedStore);
@@ -31,7 +31,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public RespBase<List<RespStore>> getStores(MyJsonWebToken jwt, ReqBase<ReqStore> request) {
-        List<Store> stores = storeDAO.listStores(request.getData());
+        List<Store> stores = storeDAO.listStores(request.getPayload());
         if (stores.isEmpty()) {
             return new RespBase<>(null);
         }

@@ -9,7 +9,7 @@ import pillihuaman.com.pe.support.repository.system.System;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-01T08:36:33-0500",
+    date = "2025-08-11T14:44:23-0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Amazon.com Inc.)"
 )
 public class SystemMapperImpl implements SystemMapper {

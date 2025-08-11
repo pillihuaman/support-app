@@ -16,4 +16,6 @@ public interface CommonDAO extends BaseMongoRepository<CommonDataDocument> {
         Optional<Tenant> findByDomain(String domain);
     }
     List<CommonDataDocument> findAllByIds(List<String> ids);
+    List<CommonDataDocument> findByConfigType(String configType);
+
 }

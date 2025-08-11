@@ -81,4 +81,21 @@ public class CommonDaoImplement extends AzureAbstractMongoRepositoryImpl<CommonD
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public List<CommonDataDocument> findByConfigType(String configType) {
+        if (configType == null || configType.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        try {
+            MongoCollection<CommonDataDocument> collection = getCollection(this.COLLECTION, CommonDataDocument.class);
+            // Filtro por el campo configType
+            return collection.find(Filters.eq("configType", configType)).into(new ArrayList<>());
+        } catch (Exception e) {
+            logger.error("Error al buscar CommonDataDocument por configType '{}': {}", configType, e.getMessage(), e);
+            return new ArrayList<>();
+        }
+    }
+
 }

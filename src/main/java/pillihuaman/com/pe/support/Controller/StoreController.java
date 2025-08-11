@@ -51,7 +51,7 @@ public class StoreController {
         request.setAddress(address);
 
         ReqBase<ReqStore> reqBase = new ReqBase<>();
-        reqBase.setData(request);
+        reqBase.setPayload(request);
 
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization"));
         return ResponseEntity.ok(storeService.getStores(token, reqBase));
@@ -71,17 +71,17 @@ public class StoreController {
             MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization"));
 
             RespBase<Boolean> deletedResponse = storeService.deleteStore(token, id);
-            boolean isDeleted = deletedResponse.getData() != null && deletedResponse.getData();
+            boolean isDeleted = deletedResponse.getPayload() != null && deletedResponse.getPayload();
 
             if (isDeleted) {
-                response.setData("Store deleted successfully");
+                response.setPayload("Store deleted successfully");
                 return ResponseEntity.ok(response);
             } else {
-                response.setData("Store not found");
+                response.setPayload("Store not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } catch (Exception e) {
-            response.setData("Error deleting store: " + e.getMessage());
+            response.setPayload("Error deleting store: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

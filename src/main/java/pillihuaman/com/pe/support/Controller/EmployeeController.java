@@ -85,7 +85,7 @@ public class EmployeeController {
         request.setLastName(lastName);
         request.setDocument(document);
         ReqBase<ReqEmployee> requst = new ReqBase<>();
-        requst.setData(request);
+        requst.setPayload(request);
         RespBase<List<RespEmployee>> response = employeeService.getEmployee(
                 jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization")),
                 requst);
@@ -115,17 +115,17 @@ public class EmployeeController {
             RespBase<Boolean> deletedResponse = employeeService.deleteEmployee(token, id);
 
             // Extract boolean value
-            boolean isDeleted = deletedResponse.getData() != null && deletedResponse.getData();
+            boolean isDeleted = deletedResponse.getPayload()!= null && deletedResponse.getPayload();
 
             if (isDeleted) {
-                response.setData("Employee deleted successfully");
+                response.setPayload("Employee deleted successfully");
                 return ResponseEntity.ok(response);
             } else {
-                response.setData("Employee not found");
+                response.setPayload("Employee not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } catch (Exception e) {
-            response.setData("Error deleting employee: " + e.getMessage());
+            response.setPayload("Error deleting employee: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

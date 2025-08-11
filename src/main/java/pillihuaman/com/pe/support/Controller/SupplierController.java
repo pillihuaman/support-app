@@ -4,15 +4,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.lib.common.ReqBase;
 import pillihuaman.com.pe.lib.common.RespBase;
+import pillihuaman.com.pe.lib.common.ResponseUtil;
 import pillihuaman.com.pe.support.Help.Constantes;
 import pillihuaman.com.pe.support.JwtService;
-import pillihuaman.com.pe.support.Service.SupplierService;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqSupplier;
 import pillihuaman.com.pe.support.RequestResponse.dto.RespSupplier;
+import pillihuaman.com.pe.support.Service.SupplierService;
 
 import java.util.List;
 
@@ -44,27 +52,39 @@ public class SupplierController {
                 .pagesize(pagesize)
                 .build();
 
-        List<RespSupplier> suppliers = supplierService.listSuppliers(req);
-        return ResponseEntity.ok(new RespBase<>(suppliers));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        supplierService.listSuppliers(req)
+                )
+        );
     }
 
     @PostMapping
     public ResponseEntity<RespBase<RespSupplier>> saveSupplier(@Valid @RequestBody ReqBase<ReqSupplier> req) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        RespSupplier saved = supplierService.saveSupplier(req.getData(), token);
-        return ResponseEntity.ok(new RespBase<>(saved));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        supplierService.saveSupplier(req.getPayload(), token)
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<RespBase<Boolean>> deleteSupplier(@PathVariable String id) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        boolean deleted = supplierService.deleteSupplier(id, token);
-        return ResponseEntity.ok(new RespBase<>(deleted));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        supplierService.deleteSupplier(id, token)
+                )
+        );
     }
 
     @GetMapping("/search")
     public ResponseEntity<RespBase<List<RespSupplier>>> findSuppliersByName(@RequestParam String name) {
-        List<RespSupplier> suppliers = supplierService.findSuppliersByName(name);
-        return ResponseEntity.ok(new RespBase<>(suppliers));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        supplierService.findSuppliersByName(name)
+                )
+        );
     }
 }

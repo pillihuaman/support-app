@@ -10,4 +10,5 @@ public interface CommonService {
     List<CommonDataDocument> findAllByIds(List<String> ids);
     CommonDataDocument saveOrUpdate(SaveCommonDataReq req);
     Optional<CommonDataDocument> findById(String id);
+    List<CommonDataDocument> findByConfigType(String configType);
 }

@@ -4,13 +4,27 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.lib.common.ReqBase;
 import pillihuaman.com.pe.lib.common.RespBase;
+import pillihuaman.com.pe.lib.common.ResponseUtil;
 import pillihuaman.com.pe.support.Help.Constantes;
 import pillihuaman.com.pe.support.JwtService;
-import pillihuaman.com.pe.support.RequestResponse.dto.*;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqMenu;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqPage;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqSystemEntities;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespMenu;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespMenuTree;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespPage;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespSystemEntities;
 import pillihuaman.com.pe.support.Service.SystemService;
 
 import java.util.List;
@@ -31,13 +45,24 @@ public class SystemController {
     // ---------------- SYSTEM ----------------
 
     @GetMapping("/system")
-    public ResponseEntity<RespBase<List<RespSystemEntities>>> listSystems(@RequestParam(required = false) Integer page,
-                                                                          @RequestParam(required = false) Integer pagesize,
-                                                                          @RequestParam(required = false) String id,
-                                                                          @RequestParam(required = false) String name) {
+    public ResponseEntity<RespBase<List<RespSystemEntities>>> listSystems(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer pagesize,
+            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String name) {
 
-        List<RespSystemEntities> systems = systemService.listSystems(ReqSystemEntities.builder().id(id).name(name).page(page).pagesize(pagesize).build());
-        return ResponseEntity.ok(new RespBase<>(systems));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.listSystems(
+                                ReqSystemEntities.builder()
+                                        .id(id)
+                                        .name(name)
+                                        .page(page)
+                                        .pagesize(pagesize)
+                                        .build()
+                        )
+                )
+        );
     }
 
     @GetMapping("/system/general")
@@ -62,23 +87,31 @@ public class SystemController {
                 .pagesize(pagesize)
                 .build();
 
-        List<RespSystemEntities> systems = systemService.searchSystemEntitiesLineal(req);
-        return ResponseEntity.ok(new RespBase<>(systems));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.searchSystemEntitiesLineal(req)
+                )
+        );
     }
-
 
     @PostMapping("/system")
     public ResponseEntity<RespBase<RespSystemEntities>> saveSystem(@Valid @RequestBody ReqBase<ReqSystemEntities> req) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        RespSystemEntities saved = systemService.saveSystem(req.getData(), token);
-        return ResponseEntity.ok(new RespBase<>(saved));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.saveSystem(req.getPayload(), token)
+                )
+        );
     }
 
     @DeleteMapping("/system/{id}")
     public ResponseEntity<RespBase<Boolean>> deleteSystem(@PathVariable String id) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        boolean deleted = systemService.deleteSystem(id, token);
-        return ResponseEntity.ok(new RespBase<>(deleted));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.deleteSystem(id, token)
+                )
+        );
     }
 
     // ---------------- PAGE ----------------
@@ -86,8 +119,11 @@ public class SystemController {
     @PostMapping("/page")
     public ResponseEntity<RespBase<RespPage>> savePage(@Valid @RequestBody ReqBase<ReqPage> req) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        RespPage saved = systemService.savePage(req.getData(), token);
-        return ResponseEntity.ok(new RespBase<>(saved));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.savePage(req.getPayload(), token)
+                )
+        );
     }
 
     @GetMapping("/page")
@@ -97,22 +133,32 @@ public class SystemController {
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String document) {
-        ReqPage req = new ReqPage();
-        List<RespPage> pages = systemService.listPages(req);
-        return ResponseEntity.ok(new RespBase<>(pages));
+
+        ReqPage req = new ReqPage(); // Puedes mapear si es necesario
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.listPages(req)
+                )
+        );
     }
 
     @GetMapping("/page/bySystem")
     public ResponseEntity<RespBase<List<RespPage>>> findPagesBySystem(@RequestParam String systemId) {
-        List<RespPage> pages = systemService.findPagesBySystem(systemId);
-        return ResponseEntity.ok(new RespBase<>(pages));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.findPagesBySystem(systemId)
+                )
+        );
     }
 
     @DeleteMapping("/page/{id}")
     public ResponseEntity<RespBase<Boolean>> deletePage(@PathVariable String id) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        boolean deleted = systemService.deletePage(id, token);
-        return ResponseEntity.ok(new RespBase<>(deleted));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.deletePage(id, token)
+                )
+        );
     }
 
     // ---------------- MENU ITEM ----------------
@@ -120,8 +166,11 @@ public class SystemController {
     @PostMapping("/menu")
     public ResponseEntity<RespBase<RespMenu>> saveMenuItem(@Valid @RequestBody ReqBase<ReqMenu> req) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        RespMenu saved = systemService.saveMenuItem(req.getData(), token);
-        return ResponseEntity.ok(new RespBase<>(saved));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.saveMenuItem(req.getPayload(), token)
+                )
+        );
     }
 
     @GetMapping("/menu")
@@ -155,32 +204,47 @@ public class SystemController {
                 .status(status)
                 .build();
 
-        List<RespMenu> menus = systemService.listMenuItems(req);
-        return ResponseEntity.ok(new RespBase<>(menus));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.listMenuItems(req)
+                )
+        );
     }
 
     @GetMapping("/menu/bySystem")
     public ResponseEntity<RespBase<List<RespMenu>>> findMenusBySystem(@RequestParam String systemId) {
-        List<RespMenu> menus = systemService.findMenusBySystem(systemId);
-        return ResponseEntity.ok(new RespBase<>(menus));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.findMenusBySystem(systemId)
+                )
+        );
     }
 
     @GetMapping("/menu/byParent")
     public ResponseEntity<RespBase<List<RespMenu>>> findMenusByParent(@RequestParam String parentId) {
-        List<RespMenu> menus = systemService.findMenusByParent(parentId);
-        return ResponseEntity.ok(new RespBase<>(menus));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.findMenusByParent(parentId)
+                )
+        );
     }
 
     @DeleteMapping("/menu/{id}")
     public ResponseEntity<RespBase<Boolean>> deleteMenu(@PathVariable String id) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        boolean deleted = systemService.deleteMenuItem(id, token);
-        return ResponseEntity.ok(new RespBase<>(deleted));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.deleteMenuItem(id, token)
+                )
+        );
     }
 
     @GetMapping("/system/menu-tree")
     public ResponseEntity<RespBase<List<RespMenuTree>>> listSystemMenuTree() {
-        List<RespMenuTree> systemMenuTree = systemService.listSystemRespMenuTree();
-        return ResponseEntity.ok(new RespBase<>(systemMenuTree));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(
+                        systemService.listSystemRespMenuTree()
+                )
+        );
     }
 }

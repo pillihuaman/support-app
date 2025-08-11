@@ -40,12 +40,12 @@ public class CommonDataDocument {
     private Map<String, Object> data = new LinkedHashMap<>();
 
     @JsonAnyGetter
-    public Map<String, Object> getData() {
+    public Map<String, Object> getPayload() {
         return data;
     }
 
     @JsonAnySetter
-    public void setData(String key, Object value) {
+    public void setPayload(String key, Object value) {
         this.data.put(key, value);
     }
 }

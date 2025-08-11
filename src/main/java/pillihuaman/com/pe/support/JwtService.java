@@ -2,7 +2,6 @@ package pillihuaman.com.pe.support;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.bson.types.ObjectId;
@@ -14,7 +13,7 @@ import pillihuaman.com.pe.lib.common.ResponseUser;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -87,24 +86,72 @@ public class JwtService {
      */
     public MyJsonWebToken parseTokenToMyJsonWebToken(String bearerToken) {
         if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-            // Manejar el caso de un token inválido o ausente
-            return null;
+            return null; // Token inválido o ausente
         }
 
         String token = bearerToken.substring(7);
-        Claims claims = extractAllClaims(token);
+        Claims claims;
+        try {
+            claims = extractAllClaims(token);
+        } catch (Exception e) {
+            return null; // Token expirado o con firma inválida
+        }
 
         MyJsonWebToken myJsonWebToken = new MyJsonWebToken();
-        Map<String, Object> userMap = (Map<String, Object>) claims.get("user");
 
+        // 1. EXTRAER TODOS LOS DATOS DEL NIVEL RAÍZ DE LOS CLAIMS
+        Map<String, Object> userMap = (Map<String, Object>) claims.get("user");
+        String tenantIdFromToken = claims.get("tenantId", String.class);
+        List<Map<String, Object>> rolesFromToken = (List<Map<String, Object>>) claims.get("role");
+        Map<String, Object> applicationFromToken = (Map<String, Object>) claims.get("application");
+
+        // 2. PROCESAR Y CONSTRUIR EL OBJETO ResponseUser
         if (userMap != null) {
             ResponseUser user = new ResponseUser();
-            user.setId(new ObjectId(userMap.get("id").toString()));
-            user.setMail(userMap.get("email").toString());
-            // Puedes añadir más campos si los necesitas (alias, mobilPhone, etc.)
+
+            // Poblar campos simples del usuario
+            Object rawId = userMap.get("id");
+            if (rawId != null) user.setId(new ObjectId(rawId.toString()));
+
+            Object rawEmail = userMap.get("email");
+            if (rawEmail != null) user.setMail(rawEmail.toString());
+
+            Object rawAlias = userMap.get("alias");
+            if (rawAlias != null) user.setAlias(rawAlias.toString());
+
+            // Asignar tenantId (limpiando las comillas dobles si aún existen)
+            if (tenantIdFromToken != null) {
+                user.setTenantId(tenantIdFromToken.replace("\"", ""));
+            }
+
+            // --- TRANSFORMACIÓN DE ROLES (Solución al Error 1) ---
+            if (rolesFromToken != null && !rolesFromToken.isEmpty()) {
+                List<String> roleNames = rolesFromToken.stream()
+                        .map(roleMap -> (String) roleMap.get("name")) // Extraer solo el campo "name"
+                        .toList(); // Convertir el stream a una lista de Strings
+                user.setRoles(roleNames);
+            }
+
             myJsonWebToken.setUser(user);
         }
-        // Aquí también podrías parsear la información de "aplication" si está en los claims
+
+        // --- TRANSFORMACIÓN DE APLICATION (Solución al Error 2) ---
+        if (applicationFromToken != null) {
+            MyJsonWebToken.Application app = new MyJsonWebToken.Application();
+            Object appID = applicationFromToken.get("applicationID");
+
+            // Suponemos que el ID de la aplicación también es un ObjectId en el origen,
+            // pero se guarda como String en el token.
+            if(appID != null) {
+            //    app.setAplicationID(new ObjectId(appID.toString()));
+            }
+
+            // Si el token incluyera más campos como "name" o "multiSession", los asignaríamos aquí.
+            // app.setName((String) applicationFromToken.get("name"));
+
+            myJsonWebToken.setAplication(app);
+        }
+
         return myJsonWebToken;
     }
 }

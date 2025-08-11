@@ -34,7 +34,7 @@ public class ProductViewServiceImpl implements ProductViewService {
 
     @Override
     public RespBase<RespProductView> saveView(MyJsonWebToken jwt, ReqBase<ReqProductView> request) {
-        ReqProductView req = request.getData();
+        ReqProductView req = request.getPayload();
         ProductView view = ProductView.builder()
                 .productId(new ObjectId(req.getProductId()))
                 .fileId(req.getFileId() != null ? new ObjectId(req.getFileId()) : null)
@@ -44,7 +44,7 @@ public class ProductViewServiceImpl implements ProductViewService {
         productViewDAO.saveView(view);
 
         RespBase<RespProductView> response = new RespBase<>();
-        response.setData(RespProductView.builder()
+        response.setPayload(RespProductView.builder()
                 .id(view.getId().toHexString())
                 .productId(view.getProductId().toHexString())
                 .fileId(view.getFileId() != null ? view.getFileId().toHexString() : null)
@@ -82,7 +82,7 @@ public class ProductViewServiceImpl implements ProductViewService {
         }
 
         RespBase<List<RespImagenProductRank>> response = new RespBase<>();
-        response.setData(ranks);
+        response.setPayload(ranks);
         response.setStatus(RespBase.Status.builder().success(true).build());
         response.setTrace(new RespBase.Trace(jwt.getId()));
         return response;
@@ -109,11 +109,11 @@ public class ProductViewServiceImpl implements ProductViewService {
 
         // 5. Validamos si la lista 'ranks' tiene al menos un elemento antes de acceder a él
         if (!ranks.isEmpty()) {
-            response.setData(ranks.get(0));
+            response.setPayload(ranks.get(0));
             response.getStatus().setSuccess(true);
         } else {
             // 6. Si no se encontró el producto, configuramos la respuesta para indicar el error
-            response.setData(null);
+            response.setPayload(null);
             response.getStatus().setSuccess(false);
         }
 
@@ -130,7 +130,7 @@ public class ProductViewServiceImpl implements ProductViewService {
         List<RespProductView> viewDtos = views.stream().map(this::toDto).collect(Collectors.toList());
 
         RespBase<List<RespProductView>> response = new RespBase<>();
-        response.setData(viewDtos);
+        response.setPayload(viewDtos);
         response.setStatus(RespBase.Status.builder().success(true).build());
         response.setTrace(new RespBase.Trace(jwt.getId()));
         return response;
@@ -146,7 +146,7 @@ public class ProductViewServiceImpl implements ProductViewService {
                 .collect(Collectors.toList());
 
         RespBase<List<RespProductView>> response = new RespBase<>();
-        response.setData(topViews);
+        response.setPayload(topViews);
         response.setStatus(RespBase.Status.builder().success(true).build());
         response.setTrace(new RespBase.Trace(jwt.getId()));
         return response;

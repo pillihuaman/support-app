@@ -4,10 +4,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.lib.common.ReqBase;
 import pillihuaman.com.pe.lib.common.RespBase;
+import pillihuaman.com.pe.lib.common.ResponseUtil;
 import pillihuaman.com.pe.support.Help.Constantes;
 import pillihuaman.com.pe.support.JwtService;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqTenant;
@@ -29,7 +37,6 @@ public class TenantController {
     @Autowired
     private HttpServletRequest request;
 
-    // ---------------- LIST TENANTS ----------------
     @GetMapping
     public ResponseEntity<RespBase<List<RespTenant>>> listTenants(@RequestParam(required = false) String id,
                                                                   @RequestParam(required = false) String name,
@@ -40,30 +47,31 @@ public class TenantController {
                 .domain(domain)
                 .active(true)
                 .build();
-        List<RespTenant> tenants = tenantService.listTenants(req);
-        return ResponseEntity.ok(new RespBase<>(tenants));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(tenantService.listTenants(req))
+        );
     }
 
-    // ---------------- SAVE TENANT ----------------
     @PostMapping
     public ResponseEntity<RespBase<RespTenant>> saveTenant(@Valid @RequestBody ReqBase<ReqTenant> req) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        RespTenant saved = tenantService.saveTenant(req.getData(), token);
-        return ResponseEntity.ok(new RespBase<>(saved));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(tenantService.saveTenant(req.getPayload(), token))
+        );
     }
 
-    // ---------------- DELETE TENANT ----------------
     @DeleteMapping("/{id}")
     public ResponseEntity<RespBase<Boolean>> deleteTenant(@PathVariable String id) {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(request.getHeader("Authorization"));
-        boolean deleted = tenantService.deleteTenant(id, token);
-        return ResponseEntity.ok(new RespBase<>(deleted));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(tenantService.deleteTenant(id, token))
+        );
     }
 
-    // ---------------- SEARCH TENANTS BY NAME ----------------
     @GetMapping("/search")
     public ResponseEntity<RespBase<List<RespTenant>>> findTenantsByName(@RequestParam String name) {
-        List<RespTenant> tenants = tenantService.findTenantsByName(name);
-        return ResponseEntity.ok(new RespBase<>(tenants));
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(tenantService.findTenantsByName(name))
+        );
     }
 }

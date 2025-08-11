@@ -18,12 +18,18 @@ public class CommonServiceImpl implements CommonService {
     public Optional<CommonDataDocument> findById(String id) {
         return commonDAO.findById(id);
     }
+
+    @Override
+    public List<CommonDataDocument> findByConfigType(String configType) {
+        return commonDAO.findByConfigType(configType);
+    }
+
     @Override
     public CommonDataDocument saveOrUpdate(SaveCommonDataReq req) {
         CommonDataDocument docToSave = new CommonDataDocument();
         docToSave.setId(req.getId());
         docToSave.setConfigType(req.getConfigType());
-        docToSave.getData().putAll(req.getData()); // Copia todos los datos del mapa
+        docToSave.getPayload().putAll(req.getData()); // Copia todos los datos del mapa
 
         return commonDAO.save(docToSave);
     }

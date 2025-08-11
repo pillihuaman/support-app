@@ -65,7 +65,7 @@ public class ProductController {
         request.setBarcode(barcode);
         request.setCategory(category);
         ReqBase<ReqProduct> requst = new ReqBase<>();
-        requst.setData(request);
+        requst.setPayload(request);
         RespBase<List<RespProduct>> response = productService.getProduct(
                 jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization")),
                 requst);
@@ -91,17 +91,17 @@ public class ProductController {
             RespBase<Boolean> deletedResponse = productService.deleteProduct(token, id);
 
             // Extract boolean value
-            boolean isDeleted = deletedResponse.getData() != null && deletedResponse.getData();
+            boolean isDeleted = deletedResponse.getPayload() != null && deletedResponse.getPayload();
 
             if (isDeleted) {
-                response.setData("product deleted successfully");
+                response.setPayload("product deleted successfully");
                 return ResponseEntity.ok(response);
             } else {
-                response.setData("product not found");
+                response.setPayload("product not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } catch (Exception e) {
-            response.setData("Error deleting product: " + e.getMessage());
+            response.setPayload("Error deleting product: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

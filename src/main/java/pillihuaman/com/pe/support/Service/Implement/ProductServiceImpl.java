@@ -135,7 +135,7 @@ public class ProductServiceImpl implements ProductService {
     // Método para obtener un Product específico
     @Override
     public RespBase<List<RespProduct>> getProduct(MyJsonWebToken jwt, ReqBase<ReqProduct> request) {
-        List<Product> products = productDAO.listProducts(request.getData());
+        List<Product> products = productDAO.listProducts(request.getPayload());
         if (products.isEmpty()) {
             return new RespBase<>(null);
         }
@@ -163,7 +163,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public RespBase<RespProduct> listProductsByUser(MyJsonWebToken jwt, ReqBase<ReqProduct> request) {
         // Obtener la carga útil de la solicitud
-        ReqProduct reqProduct = request.getData();
+        ReqProduct reqProduct = request.getPayload();
         List<Product> Products = productDAO.findByUserId(reqProduct.getId());
         RespBase<List<RespProduct>> res = new RespBase<>(null);
         return null;

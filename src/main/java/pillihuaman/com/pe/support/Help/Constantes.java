@@ -11,8 +11,10 @@ public static final String CONSULTA_PERSONAS_POR_DOCUMENTO = "CONSULTA PERSONAS 
 	public static final String BASE_ENDPOINT = "{access:private|public}/v1";
 	public static final String ENDPOINT = "/support";
     public static final String COLLECTION_TENANT = "tenant";
+	public static final String COLLECTION_WAREHOUSE = "warehouse";
+	public static final String COLLECTION_PURCHASE_ORDER = "purchaseOrder";
 
-    private Constantes() {
+	private Constantes() {
 		super();
 	}
 

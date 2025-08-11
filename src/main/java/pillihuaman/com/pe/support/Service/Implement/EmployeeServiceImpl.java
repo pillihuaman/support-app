@@ -25,7 +25,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public RespBase<RespEmployee> saveEmployee(MyJsonWebToken jwt, ReqBase<ReqEmployee> request) {
         // Obtener la carga útil de la solicitud
-        ReqEmployee reqEmployee = request.getData();
+        ReqEmployee reqEmployee = request.getPayload();
         Employee em = MapperEmployee.INSTANCE.toEmployee(reqEmployee);
         Employee savedEmployee = null;
             savedEmployee = employeeDAO.saveEmployee(em,
@@ -42,10 +42,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public RespBase<List<RespEmployee>> getEmployee(MyJsonWebToken jwt, ReqBase<ReqEmployee> request) {
         // Obtener la carga útil de la solicitud
-        //  ReqEmployee reqEmployee = request.getData();
+        //  ReqEmployee reqEmployee = request.getPayload();
 
         // Consultar el empleado por su ID o algún identificador
-        List<Employee> employees = employeeDAO.listEmployees(request.getData());
+        List<Employee> employees = employeeDAO.listEmployees(request.getPayload());
 
         if (employees.isEmpty()) {
             // Si no se encuentra el empleado, retornar un error o null
@@ -64,7 +64,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public RespBase<RespEmployee> listEmployeesByUser(MyJsonWebToken jwt, ReqBase<ReqEmployee> request) {
         // Obtener la carga útil de la solicitud
-        ReqEmployee reqEmployee = request.getData();
+        ReqEmployee reqEmployee = request.getPayload();
 
         // Listar los empleados por el ID de usuario
         List<Employee> employees = employeeDAO.findByUserId(reqEmployee.getId());
