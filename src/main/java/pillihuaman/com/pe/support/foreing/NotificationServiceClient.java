@@ -12,7 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pillihuaman.com.pe.lib.common.RespBase;
-import pillihuaman.com.pe.security.dto.NotificationRequestDTO;
+import pillihuaman.com.pe.support.RequestResponse.dto.bussiness.NotificationRequestDTO;
+
 
 /**
  * Cliente HTTP para comunicarse con el Microservicio de Notificaciones.

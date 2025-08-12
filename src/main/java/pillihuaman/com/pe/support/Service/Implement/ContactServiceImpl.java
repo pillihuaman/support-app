@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.lib.common.RespBase;
-import pillihuaman.com.pe.security.dto.NotificationRequestDTO;
-import pillihuaman.com.pe.security.entity.notify.ChannelType;
+
 import pillihuaman.com.pe.support.RequestResponse.RespContact;
+import pillihuaman.com.pe.support.RequestResponse.dto.bussiness.ChannelType;
+import pillihuaman.com.pe.support.RequestResponse.dto.bussiness.NotificationRequestDTO;
 import pillihuaman.com.pe.support.RequestResponse.dto.bussiness.ReqContact;
 import pillihuaman.com.pe.support.Service.ContactService;
 import pillihuaman.com.pe.support.Service.mapper.ContactMapper;
