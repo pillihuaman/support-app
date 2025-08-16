@@ -1,12 +1,11 @@
 package pillihuaman.com.pe.support.repository.product.dao;
 
 
-
+import org.bson.conversions.Bson;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqProduct;
 import pillihuaman.com.pe.support.repository.BaseMongoRepository;
 import pillihuaman.com.pe.support.repository.product.Product;
-
 
 import java.util.List;
 
@@ -39,4 +38,5 @@ public interface ProductDAO extends BaseMongoRepository<Product> {
 
     boolean deleteInactiveProduct(MyJsonWebToken jwt, String id);
     List<Product> searchProductsByKeywords(String keywordsString, int limit);
+    List<Product> findAllByFilter(Bson query);
 }

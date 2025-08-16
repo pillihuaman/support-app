@@ -4,7 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan; // <-- AÑADIR IMPORT
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -12,13 +13,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import pillihuaman.com.pe.lib.exception.CustomRestExceptionHandlerGeneric;
 
-import java.util.Collections;
-
 @EnableAsync
 @EnableScheduling
 @Import(CustomRestExceptionHandlerGeneric.class)
 @SpringBootApplication(scanBasePackages = {"pillihuaman.com.pe.support"})
 @EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
+@EnableCaching
 @ConfigurationPropertiesScan("pillihuaman.com.pe.support") // <-- AÑADIR ESTA ANOTACIÓN
 public class Application {
 

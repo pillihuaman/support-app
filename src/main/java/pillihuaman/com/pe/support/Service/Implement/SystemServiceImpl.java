@@ -1,11 +1,18 @@
 package pillihuaman.com.pe.support.Service.Implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import pillihuaman.com.pe.lib.common.MyJsonWebToken;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqMenu;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqPage;
+import pillihuaman.com.pe.support.RequestResponse.dto.ReqSystemEntities;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespMenu;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespMenuTree;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespPage;
+import pillihuaman.com.pe.support.RequestResponse.dto.RespSystemEntities;
 import pillihuaman.com.pe.support.Service.SystemService;
-import pillihuaman.com.pe.support.RequestResponse.dto.*;
-import pillihuaman.com.pe.support.repository.system.System;
+import pillihuaman.com.pe.support.config.CacheConfig;
 import pillihuaman.com.pe.support.repository.system.dao.MenuItemDAO;
 import pillihuaman.com.pe.support.repository.system.dao.PageDAO;
 import pillihuaman.com.pe.support.repository.system.dao.SystemDAO;
@@ -93,6 +100,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Cacheable(value = CacheConfig.SYSTEM_MENU_TREE_CACHE, key = "'mainTree'")
     public List<RespMenuTree> listSystemRespMenuTree() {
         return systemDAO.listSystemRespMenuTree();
     }

@@ -40,7 +40,7 @@ public class ProductViewController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RespBase<List<RespImagenProductRank>>> getAllViews() {
         MyJsonWebToken token = jwtService.parseTokenToMyJsonWebToken(httpServletRequest.getHeader("Authorization"));
-        return ResponseEntity.ok(productViewService.getViews(token));
+        return ResponseEntity.ok(productViewService.getViews());
     }
 
         @GetMapping(path = "/by-productById/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)

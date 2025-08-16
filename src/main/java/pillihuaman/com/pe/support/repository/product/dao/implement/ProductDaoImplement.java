@@ -1,7 +1,9 @@
 package pillihuaman.com.pe.support.repository.product.dao.implement;
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -244,6 +246,16 @@ public class ProductDaoImplement extends AzureAbstractMongoRepositoryImpl<Produc
 
         return collection.aggregate(pipeline, Product.class).into(new ArrayList<>());
     }
+    @Override
+    public List<Product> findAllByFilter(Bson query) {
+        // Obtenemos la colección de MongoDB para la entidad Product.
+        MongoCollection<Product> collection = getCollection(this.COLLECTION, Product.class);
 
+        // Ejecutamos la consulta 'find' con el filtro proporcionado.
+        FindIterable<Product> findIterable = collection.find(query);
+
+        // Convertimos el resultado iterable en una lista y la devolvemos.
+        return findIterable.into(new ArrayList<>());
+    }
 
 }

@@ -12,7 +12,7 @@ public interface ProductViewService {
 
     RespBase<RespProductView> saveView(MyJsonWebToken jwt, ReqBase<ReqProductView> request);
 
-    RespBase<List<RespImagenProductRank>> getViews(MyJsonWebToken jwt);
+    RespBase<List<RespImagenProductRank>> getViews();
 
     RespBase<List<RespProductView>> getViewsByUserId(MyJsonWebToken jwt, String userId);
 

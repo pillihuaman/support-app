@@ -9,8 +9,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pillihuaman.com.pe.lib.common.AuditEntity;
-import pillihuaman.com.pe.support.RequestResponse.RespProduct;
-import pillihuaman.com.pe.support.repository.product.dao.SizeStock;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -21,7 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Document(collection = "product")
-public class Product implements Serializable {
+public class
+Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
