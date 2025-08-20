@@ -1,10 +1,8 @@
 package pillihuaman.com.pe.support.RequestResponse;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqProduct;
 import pillihuaman.com.pe.support.RequestResponse.dto.RespFileMetadata;
 import pillihuaman.com.pe.support.repository.product.ProductMeasurement;
@@ -41,11 +39,8 @@ public class RespProduct {
     private List<RespFileMetadata> fileMetadata;
 
     // Batching & Production
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT-5")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private String expirationDate;       // ISO 8601 string
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT-5")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+
     private String manufacturingDate;
     private List<ProductMeasurement> measurements;
     // Embedded Objects

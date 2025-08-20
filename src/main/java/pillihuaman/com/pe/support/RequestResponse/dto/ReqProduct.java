@@ -6,11 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import pillihuaman.com.pe.support.RequestResponse.QuantityBasedPrice;
-import pillihuaman.com.pe.support.RequestResponse.RespProduct;
 import pillihuaman.com.pe.support.repository.product.ProductMeasurement;
 import pillihuaman.com.pe.support.repository.product.SalesGuide;
 import pillihuaman.com.pe.support.repository.product.SpecificationGroup;
-
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -44,11 +42,11 @@ public class ReqProduct {
     private List<ProductMeasurement> measurements;
     private List<SpecificationGroup> specifications;
     // Batching & Production
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT-5")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "GMT-5")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date expirationDate;       // ISO 8601 string
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT-5")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "GMT-5")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date manufacturingDate;
 
     // Embedded Objects

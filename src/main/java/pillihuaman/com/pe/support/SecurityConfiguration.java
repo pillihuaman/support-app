@@ -1,4 +1,4 @@
-package pillihuaman.com.pe.support;
+package pillihuaman.com.pe.support; // o tu paquete de config
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +13,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-/**
- * Configuración centralizada de la seguridad de la aplicación.
- * Define qué rutas son públicas, cuáles están protegidas y el manejo de sesiones.
- */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -24,29 +20,42 @@ public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
 
-    // El constructor ahora es más simple, solo necesita el filtro JWT.
     public SecurityConfiguration(JwtAuthenticationFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        // ▼▼▼ ¡ESTE ES EL ORDEN Y CONTENIDO CORRECTO! ▼▼▼
+
+                        // 1. REGLAS PÚBLICAS DE LA API:
+                        // Permite el acceso sin token a los endpoints de autenticación y documentación.
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
+
+                        // 2. REGLA DE PROTECCIÓN DE LA API:
+                        // CUALQUIER otra ruta que empiece con /api necesita autenticación.
+                        .requestMatchers("/api/**").authenticated()
+
+                        // 3. REGLA "CATCH-ALL" PÚBLICA PARA EL FRONTEND:
+                        // CUALQUIER otra petición que no haya coincidido con las reglas de /api
+                        // (es decir, /home, /product/123, /, etc.) es permitida.
+                        // Esto permite que la petición llegue al ForwardingController.
+                        .anyRequest().permitAll()
                 )
+                // ▲▲▲ FIN DE LA SECCIÓN DE REGLAS ▲▲▲
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               // .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/auth/logout")
-                       // .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) ->
                                 SecurityContextHolder.clearContext()
                         )

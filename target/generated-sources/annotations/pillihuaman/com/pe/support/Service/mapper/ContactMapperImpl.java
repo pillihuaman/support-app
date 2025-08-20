@@ -19,7 +19,7 @@ import pillihuaman.com.pe.support.repository.contact.PhoneEmbeddable;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-15T21:45:48-0500",
+    date = "2025-08-20T07:50:38-0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Amazon.com Inc.)"
 )
 @Component

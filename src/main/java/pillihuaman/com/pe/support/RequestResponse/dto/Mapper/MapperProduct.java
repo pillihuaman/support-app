@@ -1,4 +1,5 @@
 package pillihuaman.com.pe.support.RequestResponse.dto.Mapper;
+
 import org.bson.types.ObjectId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -8,12 +9,9 @@ import org.mapstruct.factory.Mappers;
 import pillihuaman.com.pe.support.RequestResponse.RespProduct;
 import pillihuaman.com.pe.support.RequestResponse.dto.ReqProduct;
 import pillihuaman.com.pe.support.repository.product.Product;
-import pillihuaman.com.pe.support.repository.product.ProductMeasurement;
-import pillihuaman.com.pe.support.repository.product.SalesGuide;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 //@Mapper(componentModel = "spring", uses = { MapperFileMetadata.class })
 @Mapper(componentModel = "spring", uses = { MapperFileMetadata.class }, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -97,7 +95,17 @@ public interface MapperProduct {
         if (date == null) {
             return null;
         }
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+
+        // ✨ CORRECCIÓN: Usar un formato estándar y consistente (ISO 8601 en UTC)
+
+        // Define el formato ISO 8601. La 'X' en SimpleDateFormat maneja la zona horaria.
+        // O más simple, forzamos a UTC.
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        // Establece la zona horaria a UTC para que la 'Z' sea correcta.
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+
+        return sdf.format(date);
     }
 
     @Named("stringToDate")
@@ -106,10 +114,15 @@ public interface MapperProduct {
             return null;
         }
         try {
-            return new SimpleDateFormat("dd/MM/yy HH:mm").parse(dateStr);
+            // ✨ CORRECCIÓN: Usa el formato que coincide con la entrada del frontend
+            // M/d/yy, h:mm a   -> para "8/17/25, 12:17 AM"
+            // Locale.US es importante para que entienda "AM/PM" correctamente
+            return new SimpleDateFormat("M/d/yy, h:mm a", java.util.Locale.US).parse(dateStr);
         } catch (ParseException e) {
-            e.printStackTrace(); // opcional: para loggear el error
-            return null;
+            System.err.println("Error Crítico al parsear la fecha: " + dateStr);
+            e.printStackTrace();
+            // Lanza una excepción para que la transacción falle y se pueda ver el error claramente
+            throw new IllegalArgumentException("Formato de fecha inválido: " + dateStr, e);
         }
     }
 }

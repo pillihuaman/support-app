@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 import pillihuaman.com.pe.lib.common.AuditEntity;
 
 import java.io.Serializable;
@@ -46,12 +47,13 @@ Product implements Serializable {
     // Size options (remains outside embedded structure)
     private List<FileMetadata> fileMetadata;
 
-    // Batching & Production
-    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "GMT-5") // ✨ CORRECCIÓN AQUÍ ✨
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") // ✨ CORRECCIÓN AQUÍ ✨
     private Date expirationDate;
-    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
-    private Date manufacturingDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "GMT-5") // ✨ CORRECCIÓN AQUÍ ✨
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") // ✨ CORRECCIÓN AQUÍ ✨
+    private Date manufacturingDate;
     // Embedded Components
     private ProductPricing pricing;
     private ProductInventory inventory;
